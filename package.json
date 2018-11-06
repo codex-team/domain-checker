@@ -13,6 +13,7 @@
     },
     "private": true,
     "workspaces": [
-        "backend"
+        "backend",
+        "frontend"
     ]
 }

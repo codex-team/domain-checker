@@ -1,0 +1,34 @@
+html,
+body {
+    margin: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.list {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: row wrap;
+}
+
+.list div {
+    width: 100%;
+    height: 1.5em;
+    font-size: 2em;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.list div:hover {
+    box-shadow: 1px 3px 40px 5px #c4d5ef;
+}
