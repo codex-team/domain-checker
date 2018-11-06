@@ -1,0 +1,25 @@
+{
+    "name": "domain-cheker-backend",
+    "version": "0.0.1",
+    "scripts": {
+        "start": "NODE_ENV=production node src/",
+        "dev": "nodemon src/"
+    },
+    "devDependencies": {
+        "eslint": "^5.7.0",
+        "eslint-config-codex": "github:codex-team/eslint-config",
+        "eslint-config-standard": "^12.0.0",
+        "eslint-plugin-import": "^2.14.0",
+        "eslint-plugin-node": "^8.0.0",
+        "eslint-plugin-security": "^1.4.0",
+        "eslint-plugin-standard": "^4.0.0",
+        "nodemon": "^1.18.4"
+    },
+    "engines": {
+        "node": ">=10"
+    },
+    "dependencies": {
+        "eslint-config-codex": "github:codex-team/eslint-config",
+        "express": "^4.16.4"
+    }
+}
