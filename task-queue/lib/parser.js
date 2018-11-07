@@ -1,5 +1,5 @@
 /**
- * This file is corresponding to message parsers.
+ * This file contains message parser.
  *
  * Whenever Queue sends or receives a message, it gets processed using Parsers's methods.
  * For example, if we receive a message, we call `parser.parse(msg)`.
@@ -36,7 +36,7 @@ class Parser {
    * @throws {Error} Not implemented.
    * @returns {void}
    */
-  parse() {
+  parse(msg) {
     throw new Error('Not implemented');
   }
 }
@@ -49,7 +49,7 @@ class JsonParser extends Parser {
    * Prepare message: convert a JS object to JSON string.
    * @param {object} msg Message.
    * @returns {string} Prepared message.
-   * @throws {Error}
+   * @throws {ParserError}
    */
   static prepare(msg) {
     try {
@@ -63,6 +63,7 @@ class JsonParser extends Parser {
    * Parse message: convert a JSON string to JS object.
    * @param {object} msg Message.
    * @returns {string} Parsed message.
+   * @throws {ParserError}
    */
   static parse(msg) {
     try {
