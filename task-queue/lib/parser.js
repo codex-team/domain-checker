@@ -18,7 +18,7 @@ class ParserError extends Error {}
 class Parser {
   /**
    * Prepare message.
-   * Here you convert a message TO specified data format.
+   * Here you convert a message to specified data format.
    * Method called when sending a message.
    * @param {any} msg Message.
    * @throws {Error} Not implemented.
