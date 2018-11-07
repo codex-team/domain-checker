@@ -1,78 +1,27 @@
-const EventEmitter = require('events');
+/**
+ * This file is corresponding to queues.
+ *
+ * A queue should have `sendMessage` and `receiveMessage` methods
+ * and use `Parser` methods to convert messages.
+ *
+ * Such structure allows us to write queues for many brokers/databases like Redis, ZeroMQ, etc.
+ * You can write your own by inheriting from `Queue` and implementing `sendMessage` and `receiveMessage`.
+ */
 const Redis = require('ioredis');
-
-/**
- * Praser error class.
- */
-class ParserError extends Error {}
-
-/**
- * Parser base class.
- */
-class Parser {
-  /**
-   * Prepare message
-   * @param {any} msg Message.
-   * @throws {Error} Not implemented.
-   * @returns {void}
-   */
-  prepare(msg) {
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * Parse message
-   * @param {any} msg Message.
-   * @throws {Error} Not implemented.
-   * @returns {void}
-   */
-  parse() {
-    throw new Error('Not implemented');
-  }
-}
-
-/**
- * Json message parser for Queue
- */
-class JsonParser extends Parser {
-  /**
-   * Prepare message
-   * @param {object} msg Message.
-   * @returns {string} Prepared message.
-   * @throws {Error}
-   */
-  static prepare(msg) {
-    try {
-      return JSON.stringify(msg);
-    } catch (e) {
-      throw new ParserError('Serialization error, can not stringify to json');
-    }
-  }
-
-  /**
-   * Parse message
-   * @param {object} msg Message.
-   * @returns {string} Parsed message.
-   */
-  static parse(msg) {
-    try {
-      return JSON.parse(msg);
-    } catch (e) {
-      throw new ParserError('Parsing error, can not parse json');
-    }
-  }
-}
+const {
+  JsonParser,
+  ParserError
+} = require('./parser');
 
 /**
  * Queue base class.
  */
-class Queue extends EventEmitter {
+class Queue {
   /**
    *
    * @param {stings} queueName Queue name.
    */
   constructor(queueName) {
-    super();
     this.queueName = queueName;
   }
 
@@ -92,12 +41,15 @@ class Queue extends EventEmitter {
 
 /**
  * Simple redis queue.
+ * @property {string} queueName Queue name.
+ * @property {number} timeout Timeout for some redis commands like `brpop`
+ * @property {Parser} parser Parser used by queue to convert messages to specified data format.
+ * @property {IORedis.Redis} dbClient Redis client.
  */
 class RedisQueue extends Queue {
   /**
    * Create a RedisQueue.
    * @param {string} queueName Queue name.
-   * @param {string} [prefix='queue:'] Prefix.
    * @param {number} [timeout=30] Timeout for some redis commands.
    * @param {object} [redisConfig] Redis connection config.
    * @param {Parser} [parser=JsonParser] Message parser.
@@ -105,7 +57,6 @@ class RedisQueue extends Queue {
    */
   constructor({
     queueName,
-    prefix = 'queue:',
     timeout = 30,
     redisConfig = {
       host: '127.0.0.1',
@@ -117,10 +68,12 @@ class RedisQueue extends Queue {
     redisClient = null
   }) {
     super(queueName);
-    this.prefix = prefix;
-    this._fullName = prefix + queueName;
+
+    this.queueName = queueName;
     this.timeout = timeout;
     this.parser = parser;
+
+    // If given redis client use it instead of creating new one
     if (typeof (redisClient) === typeof (Redis)) {
       this.dbClient = redisClient;
     } else {
@@ -142,7 +95,7 @@ class RedisQueue extends Queue {
     try {
       const prepared = this.parser.prepare(msg);
 
-      await this.dbClient.lpush(this._fullName, prepared);
+      await this.dbClient.lpush(this.queueName, prepared);
     } catch (e) {
       throw this._handleError(e);
     }
@@ -155,12 +108,14 @@ class RedisQueue extends Queue {
    */
   async receiveMessage() {
     try {
-      const received = await this.dbClient.brpop(this._fullName, this.timeout);
+      const received = await this.dbClient.brpop(this.queueName, this.timeout);
 
+      // Check if received something
       if (!received) {
         return null;
       }
 
+      // reveived format: [queueName, value]. Hence received[1]
       return this.parser.parse(received[1]);
     } catch (e) {
       throw this._handleError(e);
