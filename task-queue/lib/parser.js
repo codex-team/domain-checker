@@ -1,7 +1,7 @@
 /**
  * This file is corresponding to message parsers.
  *
- * Whenever queue sends ot receives a message, it gets processed using Parsers's methods.
+ * Whenever Queue sends or receives a message, it gets processed using Parsers's methods.
  * For example, if we reiceve a message, we call `parser.parse(msg)`.
  * This allows us to use many data formats like json, msgpack, binary, etc.
  * You can write your own parser just by inheriting from `Parser` and implementing `prepare` and `parse`.
