@@ -30,7 +30,7 @@ class Parser {
 
   /**
    * Parse message.
-   * Here you convert a message FROM specified data format.
+   * Here you convert a message from specified data format.
    * Method called when receiving a message.
    * @param {any} msg Message.
    * @throws {Error} Not implemented.
