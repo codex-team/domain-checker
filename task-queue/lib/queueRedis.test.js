@@ -1,7 +1,7 @@
 const Redis = require('ioredis');
 const {
   RedisQueue
-} = require('./queue');
+} = require('./queueRedis');
 
 // Url to redis databse with user,password,host and port
 const REDIS_URL = 'redis://127.0.0.1:6379';

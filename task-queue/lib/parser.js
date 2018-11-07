@@ -2,6 +2,7 @@
  * This file contains message parser.
  *
  * Whenever Queue sends or receives a message, it gets processed using Parsers's methods.
+ * `prepare` converts a message to specified format, `parse` converts from specified format to JS object.
  * For example, if we receive a message, we call `parser.parse(msg)`.
  * This allows us to use many data formats like json, msgpack, binary, etc.
  * You can write your own parser just by inheriting from `Parser` and implementing `prepare` and `parse`.
