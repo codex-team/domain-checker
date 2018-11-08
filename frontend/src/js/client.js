@@ -41,7 +41,7 @@ class Client {
       });
 
       this.socket.addEventListener('error', (error) => {
-        reject(e);
+        reject(error);
       });
     });
   }
