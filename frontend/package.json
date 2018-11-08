@@ -13,5 +13,8 @@
   "scripts": {
     "build": "webpack -p",
     "watch": "webpack --watch"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.0.0"
   }
 }
