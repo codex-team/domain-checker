@@ -8,21 +8,29 @@ import Client from './client';
   const API_WS = `ws://${API_URI}/ws`;
   const ID_RESULTS_DIV = 'results';
   const ID_SEARCH_INPUT = 'search-input';
+  const ID_STATUS_DIV = 'status';
 
   const searchInput = document.getElementById(ID_SEARCH_INPUT);
   const resultsDiv = document.getElementById(ID_RESULTS_DIV);
+  const statusDiv = document.getElementById(ID_STATUS_DIV);
 
   const client = new Client(API_ID, API_WS);
 
   searchInput.addEventListener('input', Util.debounce(() => {
+    resultsDiv.innerHTML = '';
+    statusDiv.innerText = 'Поиск...';
     const value = searchInput.value;
 
-    client.getDomainInfo(value, (err, freeTLD) => {
+    client.getDomainInfo(value, (freeTLD) => {
       let child = document.createElement('div');
 
       child.innerHTML = `${value}.${freeTLD}`;
 
       resultsDiv.appendChild(child);
-    }).then().catch();
+    }).then(() => {
+      statusDiv.innerText = 'Готово!';
+    }).catch(() => {
+      statusDiv.innerText = 'Ошибка!';
+    });
   }, 1000));
 })();

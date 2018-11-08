@@ -35,14 +35,13 @@ class Client {
       this.socket.addEventListener('message', (event) => {
         const data = event.data;
 
-        console.log('Получены данные ' + data);
         if (data !== 'OK' && data !== 'Wrong id') {
           callback(data);
         }
       });
 
       this.socket.addEventListener('error', (error) => {
-        console.log('Ошибка ' + error.message);
+        reject(e);
       });
     });
   }
@@ -61,7 +60,7 @@ class Client {
     } catch (e) {
       throw e;
     }
-
+    alert();
     return this.createWebSocketConnection(id, callback);
   }
   /**
