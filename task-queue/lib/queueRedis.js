@@ -7,7 +7,7 @@ const {
 } = require('./parser');
 const {
   JsonParser
-} = require('parserJson');
+} = require('./parserJson');
 
 /**
  * Simple redis queue.
@@ -59,12 +59,12 @@ class RedisQueue extends Queue {
   }
 
   /**
-   * Sends message to queue.
+   * Pushes message to queue.
    * @param {object | Array<any> | boolean | string | number} msg Message to send.
    * @throws {Redis.ReplayError | ParserError} On error.
    * @returns {void}
    */
-  async sendMessage(msg) {
+  async push(msg) {
     try {
       const prepared = this.parser.prepare(msg);
 
@@ -75,11 +75,11 @@ class RedisQueue extends Queue {
   }
 
   /**
-   * Receive message from queue.
+   * Pops message from queue.
    * @throws {Redis.ReplayError | ParserError} On error.
    * @returns {void}
    */
-  async receiveMessage() {
+  async pop() {
     try {
       const received = await this.dbClient.brpop(this.queueName, this.timeout);
 

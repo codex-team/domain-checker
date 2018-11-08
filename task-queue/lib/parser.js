@@ -1,9 +1,15 @@
 /**
  * This file contains message parser.
  *
- * Whenever Queue sends or receives a message, it gets processed using Parsers's methods.
+ * Whenever Queue pushes or pops a message, it gets processed using Parsers's methods.
+ *
+ * Parser class prepares(serializes) your message so you don't need to worry about converting,
+ * for example, a JS object to supported data format of database.
+ * For instanse Redis does not support JSON format, so we convert any JSONable JS data type to string.
+ *
  * `prepare` converts a message to specified format, `parse` converts from specified format to JS object.
- * For example, if we receive a message, we call `parser.parse(msg)`.
+ * For example, if we pop a message, we call `parser.parse(msg)`.
+ *
  * This allows us to use many data formats like json, msgpack, binary, etc.
  * You can write your own parser just by inheriting from `Parser` and implementing `prepare` and `parse`.
  */

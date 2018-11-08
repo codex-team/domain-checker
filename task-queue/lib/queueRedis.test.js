@@ -50,7 +50,7 @@ describe('RedisQueue', () => {
   it('should send a message to queue', async () => {
     try {
       // Send message via queue
-      await queue.sendMessage(message);
+      await queue.push(message);
       // Receive it via plain connection
       const response = await db.lindex(QUEUE_NAME, 0);
 
@@ -64,7 +64,7 @@ describe('RedisQueue', () => {
   // Pop created message from Redis queue
   it('should receive a message from the queue', async () => {
     try {
-      const received = await queue.receiveMessage();
+      const received = await queue.pop();
 
       expect(received).toEqual(message);
     } catch (e) {
