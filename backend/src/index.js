@@ -7,8 +7,13 @@ const port = process.env.PORT || 3000;
 
 const app = express();
 
-app.get('/', rootHandler);
+if (process.env.NODE_ENV === 'dev') {
+  const path = require('path');
 
+  app.use(express.static(path.join(__dirname, '../../frontend/src/')));
+} else {
+  app.get('/', rootHandler);
+}
 app.listen(port, hostname, () => {
   console.log(`Server running at ${hostname}:${port}/`);
 });
