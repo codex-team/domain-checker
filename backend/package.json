@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "scripts": {
         "start": "NODE_ENV=production node src/",
-        "dev": "nodemon src/"
+        "dev": "NODE_ENV=dev nodemon src/"
     },
     "devDependencies": {
         "eslint": "^5.7.0",
@@ -18,6 +18,7 @@
         "express": "^4.16.4",
         "express-ws": "^4.0.0",
         "ioredis": "^4.2.0",
+        "morgan": "^1.9.1",
         "uuid": "^3.3.2"
     }
 }

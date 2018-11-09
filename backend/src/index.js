@@ -1,6 +1,6 @@
-const process = require('process');
 const express = require('express');
 const Redis = require('ioredis');
+const morgan = require('morgan');
 const rootHandler = require('./handlers/root');
 const domainHandler = require('./handlers/domain');
 const wsHandler = require('./handlers/ws');
@@ -24,11 +24,16 @@ app.use((req, res, next) => {
   req.redisClient = redisClient;
   return next();
 });
+
+// Serve frontend if working in dev environment and set up logging
 if (process.env.NODE_ENV === 'dev') {
   const path = require('path');
 
+  app.use(morgan('dev'));
   app.use(express.static(path.join(__dirname, '../../frontend/src/')));
+  app.use('/dist', express.static(path.join(__dirname, '../../frontend/dist/')));
 } else {
+  app.use(morgan('combined'));
   app.get('/', rootHandler);
 }
 
