@@ -15,7 +15,8 @@
         "node": ">=10"
     },
     "dependencies": {
-        "express": "^4.16.4"
+        "express": "^4.16.4",
+        "express-ws": "^4.0.0",
         "ioredis": "^4.2.0",
         "uuid": "^3.3.2"
     }

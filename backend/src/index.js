@@ -3,6 +3,7 @@ const express = require('express');
 const Redis = require('ioredis');
 const rootHandler = require('./handlers/root');
 const domainHandler = require('./handlers/domain');
+const wsHandler = require('./handlers/ws');
 
 const hostname = process.env.HOST || '127.0.0.1';
 const port = process.env.PORT || 3000;
@@ -11,6 +12,9 @@ const port = process.env.PORT || 3000;
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
 const app = express();
+
+// Set up express-ws before all routes
+require('express-ws')(app);
 
 // Create a connection
 const redisClient = new Redis(REDIS_URL);
@@ -27,7 +31,10 @@ if (process.env.NODE_ENV === 'dev') {
 } else {
   app.get('/', rootHandler);
 }
+
 app.get('/domain/:domain', domainHandler);
+app.ws('/ws/:id', wsHandler);
+
 app.listen(port, hostname, () => {
   console.log(`Server running at ${hostname}:${port}/`);
 });
