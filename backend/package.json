@@ -16,5 +16,7 @@
     },
     "dependencies": {
         "express": "^4.16.4"
+        "ioredis": "^4.2.0",
+        "uuid": "^3.3.2"
     }
 }
