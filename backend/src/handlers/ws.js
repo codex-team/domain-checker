@@ -42,12 +42,10 @@ const wsHandler = async (ws, req) => {
           }
         }
 
-        ws.send('DONE');
         ws.close(1000);
       } else {
-        ws.send('WRONG ID');
-        ws.close(1000);
-      };
+        ws.close(1008);
+      }
     } catch (e) {
       ws.close(1011);
       console.error(e);
