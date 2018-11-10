@@ -2,13 +2,24 @@ const {
   RedisQueue
 } = require('task-queue');
 
-// Response queue prefix
+/**
+ * @const {string} Response queue prefix
+ */
 const QUEUE_RESPONSE_PREFIX = 'queue_response:';
-// Queue timeout
+
+/**
+ * @const {number} Queue timeout
+ */
 const QUEUE_TIMEOUT = 3;
-// Redis valuable which save current tld count
+
+/**
+ * @type {string} Redis valuable which save current tld count
+ */
 const REDIS_TLDCOUNT = 'tldCount';
-// Redis set key which saves available ids
+
+/**
+ * @type {string} Redis set key which saves available ids
+ */
 const REDIS_ID_SET = 'ids';
 
 const wsHandler = async (ws, req) => {
@@ -19,7 +30,7 @@ const wsHandler = async (ws, req) => {
     redisClient
   } = req;
 
-  ws.on('open', async (msg) => {
+  ws.on('open', async () => {
     try {
       if (id.length === 36 && await redisClient.smember(REDIS_ID_SET, id)) {
         ws.send('OK');
