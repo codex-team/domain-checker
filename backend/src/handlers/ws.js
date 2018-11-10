@@ -1,6 +1,4 @@
-const {
-  RedisQueue
-} = require('task-queue');
+const {RedisQueue} = require('task-queue');
 
 /**
  * @const {string} Response queue prefix
@@ -23,12 +21,8 @@ const REDIS_TLDCOUNT = 'tldCount';
 const REDIS_ID_SET = 'ids';
 
 const wsHandler = async (ws, req) => {
-  const {
-    id
-  } = req.params;
-  let {
-    redisClient
-  } = req;
+  const {id} = req.params;
+  let {redisClient} = req;
 
   ws.on('open', async () => {
     try {

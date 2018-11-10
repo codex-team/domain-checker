@@ -1,7 +1,5 @@
 const uuid = require('uuid/v4');
-const {
-  RedisQueue
-} = require('task-queue');
+const {RedisQueue} = require('task-queue');
 
 // Config for Queue and RedisClient.
 const QUEUE_WHOIS_NAME = 'queue:whois';
@@ -9,12 +7,8 @@ const QUEUE_WHOIS_NAME = 'queue:whois';
 const DOMAIN_REGEX = /[a-zA-Z0-9-]+/;
 
 const domainHandler = async (req, res) => {
-  const {
-    domain
-  } = req.params;
-  const {
-    redisClient
-  } = req;
+  const {domain} = req.params;
+  const {redisClient} = req;
 
   try {
     // Check if valid domain
@@ -31,6 +25,7 @@ const domainHandler = async (req, res) => {
 
     queueFormer.on('error', (err) => {
       console.error(err);
+      res.status(500).send('Internal Server Error');
     });
 
     // Put task
