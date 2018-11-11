@@ -1,20 +1,29 @@
 const uuid = require('uuid/v4');
-const {RedisQueue} = require('task-queue');
+const { RedisQueue } = require('task-queue');
 
-// Config for Queue and RedisClient.
+/**
+ * @const {string} Config for Queue and RedisClient
+ */
 const QUEUE_WHOIS_NAME = 'queue:whois';
 
-// Domain validation regexp
+/**
+ * @const {string} Task type
+ */
+const TASK_TYPE = 'whois';
+
+/**
+ * @const {RegEx} Domain validation regexp
+ */
 const DOMAIN_REGEX = /[a-zA-Z0-9-]+/;
 
 const domainHandler = async (req, res) => {
-  const {domain} = req.params;
-  const {redisClient} = req;
+  const { domain } = req.params;
+  const { redisClient } = req;
 
   try {
     // Check if valid domain
     if (!domain.test(DOMAIN_REGEX)) {
-      res.status(400).send('Bad Request');
+      res.status(400).send('Invalid domain');
     }
     // Generate unique id for request
     const randId = uuid();
@@ -25,14 +34,14 @@ const domainHandler = async (req, res) => {
       redisClient: redisClient
     });
 
-    queueFormer.on('error', (err) => {
+    queueFormer.on('error', err => {
       console.error(err);
       res.status(500).send('Internal Server Error');
     });
 
     // Put task
     await queueFormer.put({
-      type: 'whois',
+      type: TASK_TYPE,
       args: [ domain ],
       id: randId
     });
