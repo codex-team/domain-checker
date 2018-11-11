@@ -1,17 +1,25 @@
 const Redis = require('ioredis');
-const {
-  RedisQueue
-} = require('task-queue');
-const {
-  checkDomain
-} = require('./utils/checker');
+const { RedisQueue } = require('task-queue');
+const { checkDomain } = require('./utils/checker');
 
 /**
- * Config for Queue and RedisClient.
+ * @const {string} Redis database url with params.
  */
 const REDIS_URL = 'redis://127.0.0.1:6379';
+
+/**
+ * @const {string} Queue prefix where to put responses
+ */
 const QUEUE_RESPONSE_PREFIX = 'queue_response:';
+
+/**
+ * @const {string} Queue name from which pop tasks
+ */
 const QUEUE_WHOIS_NAME = 'queue:whois';
+
+/**
+ * @const {number} Queue timeout for some Redis client commands
+ */
 const QUEUE_TIMEOUT = 3;
 
 /**
@@ -48,19 +56,19 @@ const whoisCallback = async (name, tld, id, redisClient) => {
 };
 
 /**
- * Functions to be called when received msg.
+ * @const {Object} Functions to be called when popped a task.
  */
 const CALLBACKS = {
-  'whois': whoisCallback
+  whois: whoisCallback
 };
 
 /**
- * Redis client. Only one to make less connections.
+ * @const {Redis} Redis client. Only one to make less connections.
  */
 const client = new Redis(REDIS_URL);
 
 /**
- * Message receive queue.
+ * @type {RedisQueue} Tasks pop queue.
  */
 let queueWhois = new RedisQueue({
   queueName: QUEUE_WHOIS_NAME,

@@ -3,8 +3,9 @@
 const https = require('https');
 
 /**
- *
+ * Download tld list and converts it to json format.
  * @param {string} filepath Path to tld file(.json).
+ * @returns {String[]} Array of tlds.
  */
 const downloadTlds = async (filepath) => {
   let tlds = [];
