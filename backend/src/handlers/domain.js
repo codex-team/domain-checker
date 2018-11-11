@@ -3,6 +3,7 @@ const {RedisQueue} = require('task-queue');
 
 // Config for Queue and RedisClient.
 const QUEUE_WHOIS_NAME = 'queue:whois';
+
 // Domain validation regexp
 const DOMAIN_REGEX = /[a-zA-Z0-9-]+/;
 
@@ -17,6 +18,7 @@ const domainHandler = async (req, res) => {
     }
     // Generate unique id for request
     const randId = uuid();
+
     // Create a queue where we put tasks
     const queueFormer = new RedisQueue({
       queueName: QUEUE_WHOIS_NAME,
