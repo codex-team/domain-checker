@@ -55,6 +55,12 @@ const wsHandler = async (ws, req) => {
       ws.close(1011);
       console.error(e);
     }
+    try {
+      await redisClient.srem(REDIS_ID_SET, id);
+    } catch (e) {
+      console.error('Can\'t remove id from set');
+      console.error(e);
+    }
   });
 };
 
