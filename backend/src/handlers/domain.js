@@ -34,11 +34,6 @@ const domainHandler = async (req, res) => {
       redisClient: redisClient
     });
 
-    queueFormer.on('error', err => {
-      console.error(err);
-      res.status(500).send('Internal Server Error');
-    });
-
     // Put task
     await queueFormer.put({
       type: TASK_TYPE,
