@@ -8,9 +8,9 @@ const { checkDomain } = require('./utils/checker');
 const REDIS_URL = 'redis://127.0.0.1:6379';
 
 /**
- * @const {string} Queue prefix where to put responses
+ * @const {string} Workers' results queue prefix.
  */
-const QUEUE_RESPONSE_PREFIX = 'queue_response:';
+const QUEUE_RESULTS_PREFIX = 'queue_results:';
 
 /**
  * @const {string} Queue name from which pop tasks
@@ -33,7 +33,7 @@ const QUEUE_TIMEOUT = 3;
 const whoisCallback = async (name, tld, id, redisClient) => {
   let result = {};
   let queueResponse = new RedisQueue({
-    queueName: QUEUE_RESPONSE_PREFIX + id,
+    queueName: QUEUE_RESULTS_PREFIX + id,
     timeout: QUEUE_TIMEOUT,
     redisClient
   });
@@ -53,13 +53,6 @@ const whoisCallback = async (name, tld, id, redisClient) => {
   }
 
   await queueResponse.put(result);
-};
-
-/**
- * @const {Object} Functions to be called when popped a task.
- */
-const CALLBACKS = {
-  whois: whoisCallback
 };
 
 /**
@@ -91,7 +84,7 @@ const main = async () => {
 
       console.log(`Got task ${JSON.stringify(msg, null, 2)}\n`);
 
-      CALLBACKS[msg.type](...msg.args, msg.id, client);
+      whoisCallback(...msg.args, msg.id, client);
     } catch (err) {
       console.error(err);
     }

@@ -17,10 +17,11 @@ const QUEUE_WHOIS_NAME = 'queue:whois';
  * @constant {string} Queue name from which this script will pop task
  *                    to form new ones for workers
  */
-const QUEUE_TASKS_NAME = 'tasks:whois';
+const QUEUE_TASKS_NAME = 'tasks';
 
 /**
- * @const {number} Queue timeout for some Redis client commands
+ * @const {number} Queue timeout for blocking Redis client commands in seconds.
+ *                 Example: BRPOP(key, timeout) returns null if coudn't pop in a timeout period.
  */
 const QUEUE_TIMEOUT = 3;
 
@@ -31,8 +32,10 @@ const TLD_FILE = `${__dirname}/tlds.json`;
 
 /**
  * @const {string} Redis valuable which contains current number of tlds available to query.
+ *                 WebSocket route will count number of responses sent to client and exit if reached this constant.
+ *                 Updated after new tld list is downloaded.
  */
-const REDIS_TLD_COUNT = 'tldCount';
+const REDIS_TLDCOUNT = 'tldCount';
 
 /**
  * @const {number} TLD list update time in seconds
@@ -66,7 +69,6 @@ const formWhoisTask = async (name, id, redisClient) => {
       tlds.map(async tld => {
         try {
           await queueWhois.sendMessage({
-            type: 'whois',
             args: [name, tld],
             id
           });
@@ -127,7 +129,7 @@ const main = async () => {
   await setInterval(async () => {
     try {
       tlds = await updateTldList(TLD_FILE);
-      await client.set(REDIS_TLD_COUNT, tlds.length);
+      await client.set(REDIS_TLDCOUNT, tlds.length);
     } catch (e) {
       console.error(e);
     }
