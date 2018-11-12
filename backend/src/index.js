@@ -1,15 +1,23 @@
 const express = require('express');
 const Redis = require('ioredis');
 const morgan = require('morgan');
-const rootHandler = require('./handlers/root');
-const domainHandler = require('./handlers/domain');
-const wsHandler = require('./handlers/ws');
+const rootRoute = require('./routes/root');
+const domainRoute = require('./routes/domain');
+const wsRoute = require('./routes/ws');
 
+/**
+ * @const {stirng} Express host
+ */
 const hostname = process.env.HOST || '127.0.0.1';
 
+/**
+ * @const {number} Express port
+ */
 const port = process.env.PORT || 3000;
 
-// Redis connection options in one url
+/**
+ * @const {string} Redis connection coptios in one url
+ */
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
 const app = express();
@@ -35,11 +43,11 @@ if (process.env.NODE_ENV === 'dev') {
   app.use('/dist', express.static(path.join(__dirname, '../../frontend/dist/')));
 } else {
   app.use(morgan('combined'));
-  app.get('/', rootHandler);
+  app.get('/', rootRoute);
 }
 
-app.get('/domain/:domain', domainHandler);
-app.ws('/ws/:id', wsHandler);
+app.get('/domain/:domain', domainRoute);
+app.ws('/ws/:id', wsRoute);
 
 app.listen(port, hostname, () => {
   console.log(`Server running at ${hostname}:${port}/`);
