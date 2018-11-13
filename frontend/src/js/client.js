@@ -1,16 +1,23 @@
 import WebSocket from './websocket';
+import ajax from '@codexteam/ajax';
+
+/**
+ * @typedef {object} checkDomainResponse
+ * @description - Format of server answer
+ * @property {number} success - 1 or 0
+ * @property {string} websocketId - Id of channel that will get available domains
+ */
 
 /**
  * Client for domain-checker
  */
 class Client {
   /**
-   * @param {String} API_GET_WS_ID - URI to API to get ID for WS connection
-   * @param {String} API_WS_ENDPOINT - URI to WS
+   *
    */
-  constructor(API_GET_WS_ID, API_WS_ENDPOINT) {
-    this.API_GET_WS_ID = API_GET_WS_ID;
-    this.API_WS_ENDPOINT = API_WS_ENDPOINT;
+  constructor() {
+    this.API_ENDPOINT = 'localhost:3000/api';
+    this.WS_ENDPOINT = 'localhost:3000/ws';
   }
 
   /**
@@ -20,14 +27,56 @@ class Client {
    */
 
   /**
+   * Main method of the Client class. Return available domains through the callback function.
+   * @param {String} domainName - domain name to check
+   * @param {Function} zoneAvailableCallback - called when we got a response with available zone
+   * @returns {Promise<void>} - resolved after closing the WebSocket connection
+   * @throws will throw an error if the AJAX request fail
+   */
+  async checkDomain(domainName, zoneAvailableCallback) {
+    try {
+      if (this.socket && this.socket.isOpen) {
+        this.socket.close();
+      }
+      /**
+       * Send name to server, get WebSocket id for accepting free zones
+       * @type {checkDomainResponse}
+       */
+      const response = await ajax.get({
+        url: this.API_ENDPOINT + '/checkDomain',
+        data: {
+          domain: domainName
+        }
+      });
+
+      if (response.success === 0) {
+        throw new Error('Server error');
+      }
+
+      return new Promise((resolve, reject) => {
+        this.waitAnswers(response.websocketId, zoneAvailableCallback)
+          .then(() => {
+            console.log('All zones checked');
+            resolve();
+          }).catch((error) => {
+            reject(error);
+          });
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  /**
    * Create WS connection
    * @param {String} id - id for WebSocket connection
    * @param {newAvailableDomain} callback - called when new information about available domains comes from a socket
+   * @return {Promise<any>}
    */
-  createWebSocketConnection(id, callback) {
+  waitAnswers(id, callback) {
     return new Promise((resolve, reject) => {
       this.socket = new WebSocket({
-        url: this.API_WS_ENDPOINT + '/' + id,
+        url: `ws://${this.WS_ENDPOINT}/${id}`,
         onclose(event) {
           if (event.wasClean) {
             resolve();
@@ -39,59 +88,9 @@ class Client {
           callback(event.data);
         },
         onerror(error) {
-          reject(error);
+          throw error;
         }
       });
-    });
-  }
-
-  /**
-   * Main method of the Client class. Return available domains through the callback function.
-   * @param {String} domainName - domain name to check
-   * @param {Function} callback - called when response new available domain zone
-   * @returns {Promise<void>} - resolved after closing the WebSocket connection
-   * @throws will throw an error if the AJAX request fail
-   */
-  async getDomainInfo(domainName, callback) {
-    let id;
-
-    try {
-      id = await this.getWebSocketId(domainName);
-    } catch (e) {
-      throw e;
-    }
-    return this.createWebSocketConnection(id, callback);
-  }
-  /**
-   * Get an WebSocket id to connect to the server
-   * @param {String} domainName
-   * @returns {Promise<String>} - promise object represents the id of WebSocket connection
-   */
-  getWebSocketId(domainName) {
-    return new Promise((resolve, reject) => {
-      if (this.socket && this.socket.readyState === this.socket.OPEN) {
-        this.socket.close();
-      }
-      const xhr = new XMLHttpRequest();
-
-      xhr.open('GET', `${this.API_GET_WS_ID}/${domainName}`);
-      xhr.addEventListener('load', (event) => {
-        try {
-          const data = JSON.parse(event.currentTarget.response);
-
-          if ('id' in data) {
-            resolve(data.id);
-          }
-        } catch (e) {
-          reject(e);
-        }
-      });
-      xhr.addEventListener('error', (e) => {
-        reject(e);
-      });
-      xhr.addEventListener('abort', () => reject(new Error('request aborted')));
-
-      xhr.send();
     });
   }
 }

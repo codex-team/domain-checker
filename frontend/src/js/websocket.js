@@ -74,6 +74,14 @@ class WebSocket {
 
     this.ws.send(data);
   }
+
+  /**
+   * Checks whether the connection is open or not
+   * @returns {boolean} - true if WebSocket connection is open
+   */
+  get isOpen() {
+    return this.ws.readyState === this.ws.OPEN;
+  }
 }
 
 export default WebSocket;
