@@ -1,3 +1,5 @@
+import WebSocket from './websocket';
+
 /**
  * Client for domain-checker
  */
@@ -24,32 +26,24 @@ class Client {
    */
   createWebSocketConnection(id, callback) {
     return new Promise((resolve, reject) => {
-      this.socket = new WebSocket(this.API_WS_ENDPOINT);
-
-      this.socket.addEventListener('open', () => {
-        this.socket.send(id);
-      });
-
-      this.socket.addEventListener('close', (event) => {
-        if (event.wasClean) {
-          resolve();
-        } else {
-          reject(new Error('Connection break'));
+      this.socket = new WebSocket({
+        url: this.API_GET_WS_ID + '/' + id,
+        onopen: function () {
+          this.socket.send(id);
+        },
+        onclose(event) {
+          if (event.wasClean) {
+            resolve();
+          } else {
+            reject(new Error('Connection break'));
+          }
+        },
+        onmessage(event) {
+          callback(event.data);
+        },
+        onerror(error) {
+          reject(error);
         }
-      });
-
-      this.socket.addEventListener('message', (event) => {
-        const data = event.data;
-        const WS_OPEN_CONNECTION = 'OK';
-        const WS_ID_ERROR = 'WRONG ID';
-
-        if (data !== WS_OPEN_CONNECTION && data !== WS_ID_ERROR) {
-          callback(data);
-        }
-      });
-
-      this.socket.addEventListener('error', (error) => {
-        reject(error);
       });
     });
   }
