@@ -7,7 +7,7 @@
  */
 
 const uuid = require('uuid/v4');
-const { RedisQueue } = require('task-queue');
+const { QueueFactory } = require('task-queue');
 
 /**
  * @const {string} Tasks queue name
@@ -37,7 +37,7 @@ const domainRoute = async (req, res) => {
     const randId = uuid();
 
     // Create a queue where we put tasks
-    const queueFormer = new RedisQueue({
+    const queueFormer = QueueFactory.create('redis', {
       queueName: QUEUE_TASKS_NAME,
       redisClient: redisClient
     });

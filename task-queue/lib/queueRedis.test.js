@@ -1,7 +1,4 @@
 const Redis = require('ioredis');
-// const {
-//   RedisQueue
-// } = require('./queueRedis');
 const { QueueFactory } = require('../');
 
 // Url to redis databse with user,password,host and port

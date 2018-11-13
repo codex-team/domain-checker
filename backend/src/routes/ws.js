@@ -8,7 +8,7 @@
  *    | closes socket |
  */
 
-const { RedisQueue } = require('task-queue');
+const { QueueFactory } = require('task-queue');
 
 /**
  * @const {string} Workers' results queue prefix.
@@ -51,7 +51,7 @@ const wsRoute = async (ws, req) => {
 
       ws.send('OK');
 
-      const queueResponse = new RedisQueue({
+      const queueResponse = QueueFactory.create('redis', {
         queueName: QUEUE_RESULTS_PREFIX + id,
         timeout: QUEUE_TIMEOUT,
         redisClient
