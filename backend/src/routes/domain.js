@@ -30,7 +30,7 @@ const domainRoute = async (req, res) => {
 
   try {
     // Check if valid domain
-    if (!domain.test(DOMAIN_REGEX)) {
+    if (!DOMAIN_REGEX.test(domain)) {
       res.status(400).send('Invalid domain');
     }
     // Generate unique id for request
@@ -42,8 +42,10 @@ const domainRoute = async (req, res) => {
       redisClient: redisClient
     });
 
+    console.log(queueFormer);
+
     // Put task
-    await queueFormer.put({
+    await queueFormer.push({
       type: TASK_TYPE,
       args: [ domain ],
       id: randId
@@ -51,7 +53,7 @@ const domainRoute = async (req, res) => {
 
     res.status(200).send(randId);
   } catch (e) {
-    console.error(e.error);
+    console.error(e);
     res.status(500).send('Internal Server Error');
   }
 };

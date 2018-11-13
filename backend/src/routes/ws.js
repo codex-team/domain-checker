@@ -19,20 +19,7 @@ const QUEUE_RESULTS_PREFIX = 'queue_results:';
  * @const {number} Queue timeout for blocking Redis client commands in seconds.
  *                 Example: BRPOP(key, timeout) returns null if coudn't pop in a timeout period.
  */
-const QUEUE_TIMEOUT = 3;
-
-/**
- * @const {string} Redis valuable which contains current number of tlds available to query.
- *                 Server will count number of responses sent to client and exit if reached this constant.
- */
-const REDIS_TLDCOUNT = 'tldCount';
-
-/**
- * @const {string} Redis set which contains current tasks' ids,
- *                       so backend can check if task exists even before
- *                       first response from worker being put in responses queue
- */
-const REDIS_SET_TASK_IDS = 'ids';
+const QUEUE_TIMEOUT = 10;
 
 /**
  * @const {number} WebSocket close code when no errors occurred
@@ -49,52 +36,51 @@ const WS_CLOSE_INVALID_ID = 1008;
  */
 const WS_CLOSE_SERVER_ERROR = 1011;
 
+/**
+ * @const {number} WebSocket close code when within timeout no results from worker has been received
+ */
+const WS_CLOSE_TIMEOUT = 3001;
+
 const wsRoute = async (ws, req) => {
   const { id } = req.params;
   let { redisClient } = req;
 
-  ws.on('open', async () => {
-    try {
-      if (id.length === 36 && (await redisClient.smember(REDIS_SET_TASK_IDS, id))) {
-        ws.send('OK');
+  try {
+    if (id.length === 36) {
+      let sent = false;
 
-        // Get tld count from database
-        const tldCount = +(await redisClient.get(REDIS_TLDCOUNT));
+      ws.send('OK');
 
-        const queueResponse = new RedisQueue({
-          queueName: QUEUE_RESULTS_PREFIX + id,
-          timeout: QUEUE_TIMEOUT,
-          redisClient
-        });
+      const queueResponse = new RedisQueue({
+        queueName: QUEUE_RESULTS_PREFIX + id,
+        timeout: QUEUE_TIMEOUT,
+        redisClient
+      });
 
-        for (let i = 0; i < tldCount; i++) {
-          const status = await queueResponse.pop();
+      let status;
 
-          if (status.available === true) {
-            ws.send(status.tld);
-          } else {
-            // If received null in timeout task is done, break out of loop and close websocket
-            break;
-          }
+      while ((status = await queueResponse.pop())) {
+        if (status.available) {
+          ws.send(status.tld);
+          sent = true;
         }
+      }
 
+      if (sent) {
+        console.log(`Closing ${id}`);
         ws.close(WS_CLOSE_OK);
       } else {
-        ws.close(WS_CLOSE_INVALID_ID);
+        console.log(`Timeout reached ${id}`);
+        ws.close(WS_CLOSE_TIMEOUT);
       }
-    } catch (e) {
-      ws.close(WS_CLOSE_SERVER_ERROR);
-      console.error(e);
+    } else {
+      console.log(`Invalid id ${id}`);
+      ws.close(WS_CLOSE_INVALID_ID);
     }
-
-    try {
-      // Tell db we're done with current task by removing it from set of active tasks
-      await redisClient.srem(REDIS_SET_TASK_IDS, id);
-    } catch (e) {
-      console.error(`Can't tell database we are done with current task ${id}`);
-      console.error(e);
-    }
-  });
+  } catch (e) {
+    ws.close(WS_CLOSE_SERVER_ERROR);
+    console.error(e);
+  }
 };
 
 module.exports = wsRoute;
