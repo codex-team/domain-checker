@@ -46,7 +46,7 @@ if (process.env.NODE_ENV === 'dev') {
   app.get('/', rootRoute);
 }
 
-app.get('/domain/:domain', domainRoute);
+app.get('/api/checkDomain/:domain', domainRoute);
 app.ws('/ws/:id', wsRoute);
 
 app.listen(port, hostname, () => {

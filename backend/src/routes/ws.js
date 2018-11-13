@@ -8,7 +8,7 @@
  *    | closes socket |
  */
 
-const { QueueFactory } = require('task-queue');
+const { QueueFactory } = require('queue');
 
 /**
  * @const {string} Workers' results queue prefix.

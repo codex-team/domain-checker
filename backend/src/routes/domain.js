@@ -7,7 +7,7 @@
  */
 
 const uuid = require('uuid/v4');
-const { QueueFactory } = require('task-queue');
+const { QueueFactory } = require('queue');
 
 /**
  * @const {string} Tasks queue name
