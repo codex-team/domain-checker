@@ -27,10 +27,7 @@ class Client {
   createWebSocketConnection(id, callback) {
     return new Promise((resolve, reject) => {
       this.socket = new WebSocket({
-        url: this.API_GET_WS_ID + '/' + id,
-        onopen: function () {
-          this.socket.send(id);
-        },
+        url: this.API_WS_ENDPOINT + '/' + id,
         onclose(event) {
           if (event.wasClean) {
             resolve();
