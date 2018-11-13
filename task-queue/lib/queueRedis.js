@@ -39,8 +39,6 @@ class RedisQueue extends Queue {
   }) {
     super(queueName);
 
-    // Queue name
-    this.queueName = queueName;
     // Timeout for some commands
     this.timeout = timeout;
     // Message parser
