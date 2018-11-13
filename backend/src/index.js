@@ -6,7 +6,7 @@ const domainRoute = require('./routes/domain');
 const wsRoute = require('./routes/ws');
 
 /**
- * @const {stirng} Express host
+ * @const {string} Express host
  */
 const hostname = process.env.HOST || '127.0.0.1';
 

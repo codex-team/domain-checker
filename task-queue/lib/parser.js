@@ -7,7 +7,7 @@
  * for example, a JS object to supported data format of database.
  * For instanse Redis does not support JSON format, so we convert any JSONable JS data type to string.
  *
- * `prepare` — converts a message to specified format, 
+ * `prepare` — converts a message to specified format,
  * `parse` — converts from specified format to JS object.
  * For example, if we pop a message, we call `parser.parse(msg)`.
  *
