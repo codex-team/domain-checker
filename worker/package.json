@@ -1,0 +1,19 @@
+{
+  "name": "worker",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "ioredis": "^4.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.8.0",
+    "eslint-config-codex": "github:codex-team/eslint-config"
+  },
+  "engines": {
+    "node": ">=10"
+  }
+}
