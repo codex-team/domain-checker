@@ -16,6 +16,11 @@ const hostname = process.env.HOST || '127.0.0.1';
 const port = process.env.PORT || 3000;
 
 /**
+ * @const {string} Broker name
+ */
+const BROKER = process.env.BROKER || 'redis';
+
+/**
  * @const {string} Redis connection coptios in one url
  */
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
@@ -25,12 +30,15 @@ const app = express();
 // Set up express-ws before all routes
 require('express-ws')(app);
 
-// Create a connection
-const redisClient = new Redis(REDIS_URL);
+let dbClient;
+
+if (BROKER === 'redis') {
+  dbClient = new Redis(REDIS_URL);
+}
 
 // Let handlers reuse redis connection
 app.use((req, res, next) => {
-  req.redisClient = redisClient;
+  req.dbClient = dbClient;
   return next();
 });
 

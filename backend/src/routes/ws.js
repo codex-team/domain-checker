@@ -43,7 +43,7 @@ const WS_CLOSE_TIMEOUT = +process.env.WS_CLOSE_TIMEOUT || 3001;
 
 const wsRoute = async (ws, req) => {
   const { id } = req.params;
-  let { redisClient } = req;
+  let { dbClient } = req;
 
   try {
     if (id.length === 36) {
@@ -54,7 +54,7 @@ const wsRoute = async (ws, req) => {
       const queueResponse = QueueFactory.create('redis', {
         queueName: QUEUE_RESULTS_PREFIX + id,
         timeout: QUEUE_TIMEOUT,
-        redisClient
+        dbClient
       });
 
       let status;

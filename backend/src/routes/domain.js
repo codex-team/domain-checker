@@ -26,7 +26,7 @@ const DOMAIN_REGEXP = new RegExp(process.env.DOMAIN_REGEXP) || /[a-zA-Z0-9-]+/;
 
 const domainRoute = async (req, res) => {
   const { domain } = req.params;
-  const { redisClient } = req;
+  const { dbClient } = req;
 
   try {
     // Check if valid domain
@@ -39,7 +39,7 @@ const domainRoute = async (req, res) => {
     // Create a queue where we put tasks
     const queueFormer = QueueFactory.create('redis', {
       queueName: QUEUE_TASKS_NAME,
-      redisClient: redisClient
+      dbClient
     });
 
     console.log(queueFormer);

@@ -35,7 +35,7 @@ class RedisQueue extends Queue {
       db: 0
     },
     parser = JsonParser,
-    redisClient = null
+    dbClient = null
   }) {
     super(queueName);
 
@@ -45,8 +45,8 @@ class RedisQueue extends Queue {
     this.parser = parser;
 
     // If given redis client use it instead of creating new one
-    if (typeof (redisClient) === typeof (Redis)) {
-      this.dbClient = redisClient;
+    if (typeof (dbClient) === typeof (Redis)) {
+      this.dbClient = dbClient;
     } else {
       try {
         this.dbClient = new Redis(redisConfig);
