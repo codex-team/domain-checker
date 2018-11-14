@@ -20,9 +20,9 @@ class Worker {
    * @param {Obejct} queueConfig Queue config passed to new Queue(queueConfig)
    * @param {Obejct | string} [dbConfig] Database/broker connection config.
    */
-  constructor(name, { broker, queueConfig, dbConfig = null }) {
+  constructor(name) {
     this.name = name;
-    this.registry = new Registry({ broker, queueConfig, dbConfig });
+    this.registry = new Registry();
   }
 
   /**
@@ -35,9 +35,10 @@ class Worker {
    * Start tasks processing
    */
   async start() {
+    console.log(`Worker ${this.name} started`);
     while (true) {
       try {
-        const task = await this.registry.popTask(this.name);
+        const task = await this.popTask(this.name);
 
         if (!task) {
           continue;
@@ -45,9 +46,31 @@ class Worker {
 
         await this.handle(task);
       } catch (e) {
+        console.error(`Worker ${this.name} error`);
+        console.error(e);
         throw new WorkerError(e);
       }
     }
+  }
+
+  /**
+   * Pop task from worker's queue
+   * @param {string} workerName Name of worker
+   * @returns {Object} Task from registry
+   */
+  async popTask(workerName) {
+    const task = await this.registry.popTask(workerName);
+
+    return task;
+  }
+
+  /**
+   * Push task to another worker
+   * @param {string} workerName Name of worker
+   * @param {any} payload Task
+   */
+  async pushTask(workerName, payload) {
+    await this.registry.push(workerName, payload);
   }
 }
 
