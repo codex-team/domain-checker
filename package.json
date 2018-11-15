@@ -15,7 +15,7 @@
     "workspaces": [
         "backend",
         "frontend",
-        "task-queue",
-        "workers"
+        "queue",
+        "worker"
     ]
 }

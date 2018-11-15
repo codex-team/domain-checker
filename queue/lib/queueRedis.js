@@ -35,20 +35,18 @@ class RedisQueue extends Queue {
       db: 0
     },
     parser = JsonParser,
-    redisClient = null
+    dbClient = null
   }) {
     super(queueName);
 
-    // Queue name
-    this.queueName = queueName;
     // Timeout for some commands
     this.timeout = timeout;
     // Message parser
     this.parser = parser;
 
     // If given redis client use it instead of creating new one
-    if (typeof (redisClient) === typeof (Redis)) {
-      this.dbClient = redisClient;
+    if (typeof (dbClient) === typeof (Redis)) {
+      this.dbClient = dbClient;
     } else {
       try {
         this.dbClient = new Redis(redisConfig);
