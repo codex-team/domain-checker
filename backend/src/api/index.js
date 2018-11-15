@@ -16,6 +16,6 @@ router.get('/', rootRoute);
 router.get('/checkDomain/:domain', domainRoute);
 
 // Route for sending results to client
-router.ws('/ws', wsRoute);
+router.ws('/ws/:id', wsRoute);
 
 module.exports = router;
