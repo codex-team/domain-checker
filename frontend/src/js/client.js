@@ -78,8 +78,6 @@ class Client {
     return new Promise((resolve, reject) => {
       this.socket = new WebSocketWrapper({
         url: `${this.WS_ENDPOINT}/${id}`,
-        onopen() {
-        },
         onclose(event) {
           if (event.wasClean) {
             resolve();
