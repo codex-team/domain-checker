@@ -2,5 +2,8 @@
     "extends": "codex",
     "plugins": [
         "security"
-    ]
+    ],
+    "rules": {
+        "object-curly-newline" : ["error", { "minProperties": 2 }]
+    }
 }

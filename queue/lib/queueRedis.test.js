@@ -1,7 +1,5 @@
 const Redis = require('ioredis');
-const {
-  RedisQueue
-} = require('./queueRedis');
+const { QueueFactory } = require('../');
 
 // Url to redis databse with user,password,host and port
 const REDIS_URL = 'redis://127.0.0.1:6379';
@@ -22,10 +20,7 @@ describe('RedisQueue', () => {
   // Test message
   const message = {
     type: 'test',
-    args: [
-      'test',
-      'io'
-    ]
+    args: ['test', 'io']
   };
   // Queue
   let queue;
@@ -33,7 +28,7 @@ describe('RedisQueue', () => {
   // Create redis connection and queue
   beforeAll(() => {
     db = new Redis(REDIS_URL);
-    queue = new RedisQueue({
+    queue = QueueFactory.create('redis', {
       queueName: QUEUE_NAME,
       timeput: QUEUE_TIMEOUT,
       redisConfig: QUEUE_REDIS_CONFIG
