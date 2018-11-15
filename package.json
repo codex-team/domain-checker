@@ -14,6 +14,8 @@
     "private": true,
     "workspaces": [
         "backend",
-        "frontend"
+        "frontend",
+        "queue",
+        "worker"
     ]
 }
