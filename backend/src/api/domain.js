@@ -17,14 +17,19 @@ const domainRoute = async (req, res) => {
 
   try {
     // Generate unique id for request
-    const randId = uuid();
+    const answersSocketId = uuid();
 
     registry.pushTask('zoneCheck', {
       domain,
-      id: randId
+      id: answersSocketId
     });
 
-    res.status(200).send(randId);
+    res.status(200).json({
+      sucess: 1,
+      data: {
+        channelId: answersSocketId
+      }
+    });
   } catch (e) {
     console.error(e);
     res.status(500).send('Internal Server Error');

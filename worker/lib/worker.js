@@ -17,8 +17,8 @@ class Worker {
   /**
    *Creates an instance of Worker.
    * @param {string} broker Broker name. E.g. 'redis'
-   * @param {Obejct} queueConfig Queue config passed to new Queue(queueConfig)
-   * @param {Obejct | string} [dbConfig] Database/broker connection config.
+   * @param {Object} queueConfig Queue config passed to new Queue(queueConfig)
+   * @param {Object | string} [dbConfig] Database/broker connection config.
    */
   constructor(name) {
     this.name = name;

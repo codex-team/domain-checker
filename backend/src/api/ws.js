@@ -14,9 +14,9 @@ const { QueueFactory } = require('queue');
 const brokerClient = require('../helpers/broker');
 
 /**
- * @const {number} Task id length
+ * @const {number} Channel id length. Used to check user provided channel id in route.
  */
-const ID_LENGTH = 36;
+const CHANNEL_ID_LENGTH = 36;
 
 /**
  * Websockets can close connection with one of these codes
@@ -33,7 +33,7 @@ const wsRoute = async (ws, req) => {
   const { id } = req.params;
 
   try {
-    if (id.length === ID_LENGTH) {
+    if (id.length === CHANNEL_ID_LENGTH) {
       let sent = false;
 
       ws.send('OK');
