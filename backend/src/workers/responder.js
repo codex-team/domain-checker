@@ -81,3 +81,5 @@ class ResponderWorker extends Worker {
     });
   }
 }
+
+module.exports = ResponderWorker;
