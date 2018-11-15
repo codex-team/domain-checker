@@ -26,9 +26,7 @@ const domainRoute = async (req, res) => {
 
     res.status(200).json({
       sucess: 1,
-      data: {
-        channelId: answersSocketId
-      }
+      data: { channelId: answersSocketId }
     });
   } catch (e) {
     console.error(e);

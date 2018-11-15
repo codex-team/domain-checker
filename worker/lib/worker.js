@@ -16,9 +16,7 @@ class WorkerError extends Error {}
 class Worker {
   /**
    *Creates an instance of Worker.
-   * @param {string} broker Broker name. E.g. 'redis'
-   * @param {Object} queueConfig Queue config passed to new Queue(queueConfig)
-   * @param {Object | string} [dbConfig] Database/broker connection config.
+   * @param {string} name Worker name
    */
   constructor(name) {
     this.name = name;
@@ -27,7 +25,7 @@ class Worker {
 
   /**
    * Task handler. Main logic of your worker.
-   * @param {any} Task
+   * @param {any} task Task payload
    */
   async handle(task) {}
 
