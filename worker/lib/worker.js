@@ -17,10 +17,16 @@ class Worker {
   /**
    *Creates an instance of Worker.
    * @param {string} name Worker name
+   * @param {Registry} registry Registry instanse
    */
-  constructor(name) {
+  constructor(name, registry) {
     this.name = name;
-    this.registry = new Registry();
+
+    if (!(registry instanceof Registry)) {
+      throw new Error('registry argument is not instance of Registry');
+    }
+
+    this.registry = registry;
   }
 
   /**
