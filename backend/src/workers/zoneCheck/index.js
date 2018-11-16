@@ -1,6 +1,5 @@
 const fs = require('fs');
-const { Worker } = require('worker');
-const registry = require('../helpers/registry');
+const { Worker } = require('../lib/worker');
 
 /**
  * @const {string} Path to file where tlds are stored
@@ -21,7 +20,7 @@ class ZoneCheckWorker extends Worker {
    * Creates an instance of ZoneCheckerWorker.
    */
   constructor() {
-    super('zoneCheck', registry);
+    super('zoneCheck');
   }
 
   /**

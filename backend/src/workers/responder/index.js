@@ -1,8 +1,7 @@
 const path = require('path');
-const { Worker } = require('./lib/worker');
+const { Worker } = require('../lib/worker');
 const { QueueFactory } = require('queue');
-const registry = require('../helpers/registry');
-const broker = require('../helpers/broker');
+const broker = require('../../helpers/broker');
 const env = require('dotenv').config({ path: path.resolve(__dirname, '../../.env') }).parsed;
 
 /**
@@ -22,7 +21,7 @@ class ResponderWorker extends Worker {
    * Creates an instance of ResponderWorker.
    */
   constructor() {
-    super('responder', registry);
+    super('responder');
     this.queueConfig = {
       timeout: env.QUEUE_TIMEOUT,
       dbClient: broker

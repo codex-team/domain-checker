@@ -1,6 +1,5 @@
-const { Worker } = require('worker');
-const { checkDomain } = require('./utils/checkDomain');
-const registry = require('../helpers/registry');
+const { Worker } = require('../lib/worker');
+const { checkDomain } = require('./checkDomain');
 
 /**
  * Worker responsible for quering whois to check domain availability.
@@ -12,7 +11,7 @@ class WhoisWorker extends Worker {
    * Creates an instance of WhoisWorker.
    */
   constructor() {
-    super('whois', registry);
+    super('whois');
   }
 
   /**
