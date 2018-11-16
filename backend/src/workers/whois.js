@@ -1,5 +1,5 @@
 const { Worker } = require('worker');
-const { checkDomain } = require('../utils/checkDomain');
+const { checkDomain } = require('./utils/checkDomain');
 const registry = require('../helpers/registry');
 
 /**
@@ -17,11 +17,10 @@ class WhoisWorker extends Worker {
 
   /**
    * Process tasks
-   * @param {Object} task Format: {
-   *    id,
-   *    domain,
-   *    tld
-   * }
+   * @param {Object} task Worker task
+   * @param {string} task.id Task id
+   * @param {string} task.domain Domain name
+   * @param {string} task.tld Tld
    */
   async handle(task) {
     const available = await checkDomain(task.domain, task.tld);

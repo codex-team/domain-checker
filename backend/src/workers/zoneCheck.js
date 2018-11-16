@@ -26,10 +26,9 @@ class ZoneCheckWorker extends Worker {
 
   /**
    * Process tasks
-   * @param {any} task Format: {
-   *    id,
-   *    domain
-   * }
+   * @param {any} task Worker task
+   * @param {string} task.id Task id
+   * @param {string} task.domain Domain name
    */
   async handle(task) {
     await Promise.all(

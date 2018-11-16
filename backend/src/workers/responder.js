@@ -1,10 +1,13 @@
 const path = require('path');
-const { Worker } = require('worker');
+const { Worker } = require('./lib/worker');
 const { QueueFactory } = require('queue');
 const registry = require('../helpers/registry');
 const broker = require('../helpers/broker');
 const env = require('dotenv').config({ path: path.resolve(__dirname, '../../.env') }).parsed;
 
+/**
+ * @const {number} Queue cleaner run interval in milliseconds
+ */
 const CLEAN_TIMEOUT = 5 * 60 * 1000;
 
 /**
@@ -68,11 +71,10 @@ class ResponderWorker extends Worker {
 
   /**
    * Process tasks
-   * @param {Object} task Format: {
-   *    id,
-   *    available,
-   *    tld
-   * }
+   * @param {Object} task Worker task
+   * @param {string} task.id Task id
+   * @param {boolean} task.available Availability status true/false
+   * @param {string} task.tld Zone
    */
   async handle(task) {
     await this.respond(task.id, {
