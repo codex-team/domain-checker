@@ -61,6 +61,8 @@ class ResponderWorker extends Worker {
         ...this.queueConfig
       });
       this._timestams[id] = Date.now();
+      console.log(`Created queue for ${id}`);
+      console.log(`Queues number: ${Object.keys(this.queues).length}`);
     }
 
     await this.queues[id].push({
