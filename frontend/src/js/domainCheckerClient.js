@@ -14,7 +14,7 @@ import ajax from '@codexteam/ajax';
  */
 class DomainCheckerClient {
   /**
-   *
+   * Setup necessary variables
    */
   constructor() {
     this.API_ENDPOINT = process.env.API_ENDPOINT;
