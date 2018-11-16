@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
-    "@codexteam/ajax": "^3.2.1"
+    "@codexteam/ajax": "^3.2.1",
+    "dotenv-webpack": "^1.5.7"
   }
 }

@@ -17,8 +17,8 @@ class DomainCheckerClient {
    *
    */
   constructor() {
-    this.API_ENDPOINT = 'http://localhost:3000/api';
-    this.WS_ENDPOINT = 'ws://localhost:3000/api/ws';
+    this.API_ENDPOINT = process.env.API_ENDPOINT;
+    this.WS_ENDPOINT = process.env.WS_ENDPOINT;
   }
 
   /**
@@ -35,7 +35,6 @@ class DomainCheckerClient {
    * @throws will throw an error if the AJAX request fail
    */
   async checkDomain(domainName, zoneAvailableCallback) {
-
     try {
       if (this.socket && this.socket.isOpen) {
         this.socket.close();
