@@ -5,13 +5,14 @@ import ajax from '@codexteam/ajax';
  * @typedef {object} checkDomainResponse
  * @description - Format of server answer
  * @property {number} success - 1 or 0
- * @property {string} channelId - Id of channel that will get available domains
+ * @property {object} data - data from server
+ * @property {string} data.channelId - Id of channel that will get available domains
  */
 
 /**
- * Client for domain-checker
+ * DomainCheckerClient for domain-checker server
  */
-class Client {
+class DomainCheckerClient {
   /**
    *
    */
@@ -27,19 +28,20 @@ class Client {
    */
 
   /**
-   * Main method of the Client class. Return available domains through the callback function.
+   * Main method of the DomainCheckerClient class. Return available domains through the callback function.
    * @param {String} domainName - domain name to check
    * @param {Function} zoneAvailableCallback - called when we got a response with available zone
    * @returns {Promise<void>} - resolved after closing the WebSocketWrapper connection
    * @throws will throw an error if the AJAX request fail
    */
   async checkDomain(domainName, zoneAvailableCallback) {
+
     try {
       if (this.socket && this.socket.isOpen) {
         this.socket.close();
       }
       /**
-       * Send name to server, get WebSocketWrapper id for accepting free zones
+       * Send name to server, get WebSocket id for accepting free zones
        * @type {checkDomainResponse}
        */
       const response = await ajax.get({
@@ -64,12 +66,13 @@ class Client {
         throw new Error('Invalid response from server');
       }
     } catch (e) {
+      console.log(e);
       throw e;
     }
   }
 
   /**
-   * Create WS connection
+   * Create WS connection and sends free zones through callback
    * @param {String} id - id for WebSocketWrapper connection
    * @param {newAvailableDomain} callback - called when new information about available domains comes from a socket
    * @return {Promise<any>}
@@ -96,4 +99,4 @@ class Client {
   }
 }
 
-export default Client;
+export default DomainCheckerClient;

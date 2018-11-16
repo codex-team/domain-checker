@@ -1,6 +1,6 @@
 import '@babel/polyfill';
 import Util from './util';
-import Client from './client';
+import DomainCheckerClient from './domainCheckerClient';
 
 (function () {
   /**
@@ -18,23 +18,34 @@ import Client from './client';
    */
   const statusDiv = document.getElementById('status');
 
-  const client = new Client();
+  /**
+   * Client for domain-checker API. Required for getting available zones
+   * @type {DomainCheckerClient}
+   */
+  const client = new DomainCheckerClient();
 
   /**
-   * called when the user enters something in input field
+   * Called when the user enters something in input field
+   * @type {function}
    */
   const inputHandler = () => {
     resultsDiv.innerHTML = '';
     statusDiv.innerText = 'Поиск...';
     const value = searchInput.value;
 
-    client.checkDomain(value, (freeTLD) => {
+    /**
+     * Used for handling new available TLD from client
+     * @param availableTLD - new available TLD from client
+     */
+    const newAvailableDomainHandler = (availableTLD) => {
       let child = document.createElement('div');
 
-      child.innerHTML = `${value}.${freeTLD}`;
+      child.innerHTML = `${value}.${availableTLD}`;
 
       resultsDiv.appendChild(child);
-    }).then(() => {
+    };
+
+    client.checkDomain(value, newAvailableDomainHandler).then(() => {
       statusDiv.innerText = 'Готово!';
     }).catch(() => {
       statusDiv.innerText = 'Ошибка!';

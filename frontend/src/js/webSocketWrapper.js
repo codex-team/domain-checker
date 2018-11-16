@@ -12,13 +12,14 @@
  */
 class WebSocketWrapper {
   /**
-   * Determining the necessary information for initialization WebSocketWrapper connection and open new WebSocketWrapper connection
+   * Determining the necessary information for initialization WebSocket connection and open new WebSocket connection
    * @param {Object} options
    *
    * Server properties
-   * @param {String} options.host - WebSocketWrapper server host
-   * @param {String} options.path - WebSocketWrapper server path
-   * @param {Number} options.port - WebSocketWrapper server port
+   * @param {String} options.url - WebSocket full url for connection
+   * @param {String} options.host - WebSocket server host
+   * @param {String} options.path - WebSocket server path
+   * @param {Number} options.port - WebSocket server port
    * @param {Boolean} options.secure - if True, uses wss protocol, else ws
    *
    * Events handlers
