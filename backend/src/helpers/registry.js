@@ -1,4 +1,4 @@
-const { Registry } = require('worker');
+const { Registry } = require('../workers/lib/registry');
 
 let registry;
 

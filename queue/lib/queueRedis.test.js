@@ -2,17 +2,11 @@ const Redis = require('ioredis');
 const { QueueFactory } = require('../');
 
 // Url to redis databse with user,password,host and port
-const REDIS_URL = 'redis://127.0.0.1:6379';
+const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 // Name of testing queue
 const QUEUE_NAME = 'queue:test';
 // Timeout for queue
 const QUEUE_TIMEOUT = 30;
-// Redis config for queue
-const QUEUE_REDIS_CONFIG = {
-  host: '127.0.0.1',
-  port: 6379,
-  password: null
-};
 
 describe('RedisQueue', () => {
   // Database connection
@@ -30,15 +24,14 @@ describe('RedisQueue', () => {
     db = new Redis(REDIS_URL);
     queue = QueueFactory.create('redis', {
       queueName: QUEUE_NAME,
-      timeput: QUEUE_TIMEOUT,
-      redisConfig: QUEUE_REDIS_CONFIG
+      timeout: QUEUE_TIMEOUT,
+      dbClient: db
     });
   });
 
   // Close all connections
   afterAll(() => {
     db.quit();
-    queue.quit();
   });
 
   // Send message via queue and check it via another connection

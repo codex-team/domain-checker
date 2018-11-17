@@ -1,4 +1,5 @@
 const { Registry } = require('./registry');
+const registry = require('../../helpers/registry');
 
 /**
  * Worker error.
@@ -20,7 +21,12 @@ class Worker {
    */
   constructor(name) {
     this.name = name;
-    this.registry = new Registry();
+
+    if (!(registry instanceof Registry)) {
+      throw new Error('registry argument is not instance of Registry');
+    }
+
+    this.registry = registry;
   }
 
   /**
