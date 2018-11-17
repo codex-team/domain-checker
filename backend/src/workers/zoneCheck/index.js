@@ -1,3 +1,5 @@
+const path = require('path');
+const env = require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') }).parsed;
 const fs = require('fs');
 const { Worker } = require('../lib/worker');
 
@@ -30,16 +32,21 @@ class ZoneCheckWorker extends Worker {
    * @param {string} task.domain Domain name
    */
   async handle(task) {
-    await Promise.all(
-      tlds.map(async tld => {
-        this.pushTask('whois', {
-          domain: task.domain,
-          tld: tld,
-          id: task.id
-        });
-      })
-    );
+    try {
+      await Promise.all(
+        tlds.map(async tld => {
+          this.pushTask('whois', {
+            domain: task.domain,
+            tld: tld,
+            id: task.id
+          });
+        })
+      );
+    } catch (e) {
+      console.error(e);
+      process.exit(1);
+    }
   }
 }
 
-module.exports = ZoneCheckWorker;
+new ZoneCheckWorker().start();
