@@ -13,7 +13,6 @@ const api = require('./api');
 // Main api route
 app.use('/api', api);
 
-
 // Serve frontend if working in dev environment and set up logging
 if (process.env.NODE_ENV === 'dev') {
   app.use(morgan('dev'));
