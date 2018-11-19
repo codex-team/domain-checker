@@ -1,8 +1,10 @@
 const path = require('path');
-const { Worker } = require('../lib/worker');
+const env = require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') }).parsed;
+const {
+  Worker, WorkerError
+} = require('../lib/worker');
 const { QueueFactory } = require('queue');
 const broker = require('../../helpers/broker');
-const env = require('dotenv').config({ path: path.resolve(__dirname, '../../.env') }).parsed;
 
 /**
  * @const {number} Queue cleaner run interval in milliseconds
@@ -38,12 +40,17 @@ class ResponderWorker extends Worker {
    * and deletes queue if it was created more than CLEAN_TIMEOUT time ago.
    */
   cleanQueues() {
-    Object.entries(this._timestams).forEach(([id, timestamp]) => {
-      if (Date.now() - timestamp > CLEAN_TIMEOUT) {
-        delete this.queues[id];
-        delete this._timestams[id];
-      }
-    });
+    try {
+      Object.entries(this._timestams).forEach(([id, timestamp]) => {
+        if (Date.now() - timestamp > CLEAN_TIMEOUT) {
+          delete this.queues[id];
+          delete this._timestams[id];
+        }
+      });
+    } catch (e) {
+      console.error('Queue cleaner error');
+      console.error(e);
+    }
   }
 
   /**
@@ -64,10 +71,14 @@ class ResponderWorker extends Worker {
       console.log(`Queues number: ${Object.keys(this.queues).length}`);
     }
 
-    await this.queues[id].push({
-      available: status.available,
-      tld: status.tld
-    });
+    try {
+      await this.queues[id].push({
+        available: status.available,
+        tld: status.tld
+      });
+    } catch (e) {
+      throw new WorkerError('Error while pushing response to queue');
+    }
   }
 
   /**
@@ -78,11 +89,16 @@ class ResponderWorker extends Worker {
    * @param {string} task.tld Zone
    */
   async handle(task) {
-    await this.respond(task.id, {
-      available: task.available,
-      tld: task.tld
-    });
+    try {
+      await this.respond(task.id, {
+        available: task.available,
+        tld: task.tld
+      });
+    } catch (e) {
+      console.error(e);
+      process.exit(1);
+    }
   }
 }
 
-module.exports = ResponderWorker;
+new ResponderWorker().start();
