@@ -1,0 +1,34 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: prepare
+    image: node
+    pull: always
+    commands:
+      - yarn
+
+  - name: queue
+    image: node
+    pull: always
+    commands:
+      - cd queue
+      - export DEBUG=*,-babel
+      - yarn test
+    environment:
+      REDIS_URL: "redis://redis:6379"
+
+  - name: backend
+    image: node
+    pull: always
+    commands:
+      - cd backend
+      - export DEBUG=*,-babel
+      - yarn test
+    environment:
+      REDIS_URL: "redis://redis:6379"
+
+services:
+  - name: redis
+    image: redis
+    pull: always

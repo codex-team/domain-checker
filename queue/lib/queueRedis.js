@@ -1,13 +1,8 @@
+const debug = require('debug')('queue:RedisQueue');
 const Redis = require('ioredis');
-const {
-  Queue
-} = require('./queue');
-const {
-  ParserError
-} = require('./parser');
-const {
-  JsonParser
-} = require('./parserJson');
+const { Queue } = require('./queue');
+const { ParserError } = require('./parser');
+const { JsonParser } = require('./parserJson');
 
 /**
  * Simple redis queue.
@@ -25,18 +20,7 @@ class RedisQueue extends Queue {
    * @param {Parser} [parser=JsonParser] Message parser.
    * @param {Redis} [redisClient] ioredis' client. If present used instead of creatting a new one.
    */
-  constructor({
-    queueName,
-    timeout = 30,
-    redisConfig = {
-      host: '127.0.0.1',
-      port: 6379,
-      password: null,
-      db: 0
-    },
-    parser = JsonParser,
-    dbClient = null
-  }) {
+  constructor({ queueName, timeout = 30, redisUrl = 'redis://127.0.0.1:6379', parser = JsonParser, dbClient = null }) {
     super(queueName);
 
     // Timeout for some commands
@@ -45,11 +29,14 @@ class RedisQueue extends Queue {
     this.parser = parser;
 
     // If given redis client use it instead of creating new one
-    if (typeof (dbClient) === typeof (Redis)) {
+    if (dbClient instanceof Redis) {
+      dbClient.info((_, data) => debug(`Using provided client\n${data}`));
+
       this.dbClient = dbClient;
     } else {
       try {
-        this.dbClient = new Redis(redisConfig);
+        debug(`Creating new Redis client ${redisUrl}`);
+        this.dbClient = new Redis(redisUrl);
       } catch (e) {
         throw this._handleError(e);
       }

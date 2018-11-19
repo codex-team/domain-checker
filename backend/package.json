@@ -3,12 +3,14 @@
     "version": "0.0.1",
     "scripts": {
         "start": "NODE_ENV=production node src/",
-        "dev": "NODE_ENV=dev nodemon src/"
+        "dev": "NODE_ENV=dev nodemon src/",
+        "test": "jest"
     },
     "devDependencies": {
         "eslint": "^5.7.0",
         "eslint-config-codex": "github:codex-team/eslint-config",
         "eslint-plugin-security": "^1.4.0",
+        "jest": "^23.6.0",
         "nodemon": "^1.18.4"
     },
     "engines": {

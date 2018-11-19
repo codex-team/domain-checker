@@ -1,4 +1,5 @@
 const { Registry } = require('./registry');
+const registry = require('../../helpers/registry');
 
 /**
  * Worker error.
@@ -20,7 +21,12 @@ class Worker {
    */
   constructor(name) {
     this.name = name;
-    this.registry = new Registry();
+
+    if (!(registry instanceof Registry)) {
+      throw new Error('registry argument is not instance of Registry');
+    }
+
+    this.registry = registry;
   }
 
   /**
@@ -57,9 +63,13 @@ class Worker {
    * @returns {Object} Task from registry
    */
   async popTask(workerName) {
-    const task = await this.registry.popTask(workerName);
+    try {
+      const task = await this.registry.popTask(workerName);
 
-    return task;
+      return task;
+    } catch (e) {
+      throw new WorkerError(e);
+    }
   }
 
   /**
@@ -68,7 +78,11 @@ class Worker {
    * @param {any} payload Task
    */
   async pushTask(workerName, payload) {
-    await this.registry.push(workerName, payload);
+    try {
+      await this.registry.pushTask(workerName, payload);
+    } catch (e) {
+      throw new WorkerError(e);
+    }
   }
 }
 

@@ -41,7 +41,10 @@ class Registry {
    */
   async popTask(workerName) {
     if (!this.queues[workerName]) {
-      this.queues[workerName] = QueueFactory.create(this.broker, { ...this.queueConfig, queueName: workerName });
+      this.queues[workerName] = QueueFactory.create(this.broker, {
+        ...this.queueConfig,
+        queueName: workerName
+      });
     }
 
     const task = await this.queues[workerName].pop();
@@ -56,7 +59,10 @@ class Registry {
    */
   async pushTask(workerName, payload) {
     if (!this.queues[workerName]) {
-      this.queues[workerName] = QueueFactory.create(this.broker, { ...this.queueConfig, queueName: workerName });
+      this.queues[workerName] = QueueFactory.create(this.broker, {
+        ...this.queueConfig,
+        queueName: workerName
+      });
     }
 
     await this.queues[workerName].push(payload);
