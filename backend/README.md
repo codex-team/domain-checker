@@ -24,7 +24,7 @@ Endpoints:
   Response in format:
 
   ```json
-  { "sucess": 1, "data": { "channelId": "b6b418b1-f8bd-4dc7-af1a-48b482525e92" } }
+  { "success": 1, "data": { "channelId": "b6b418b1-f8bd-4dc7-af1a-48b482525e92" } }
   ```
 
   Return codes:
