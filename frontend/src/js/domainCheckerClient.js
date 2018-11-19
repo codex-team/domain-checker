@@ -1,4 +1,4 @@
-import WebSocketWrapper from './webSocketWrapper';
+import Socket from './utils/socket';
 import ajax from '@codexteam/ajax';
 
 /**
@@ -31,7 +31,7 @@ class DomainCheckerClient {
    * Main method of the DomainCheckerClient class. Return available domains through the callback function.
    * @param {String} domainName - domain name to check
    * @param {Function} zoneAvailableCallback - called when we got a response with available zone
-   * @returns {Promise<void>} - resolved after closing the WebSocketWrapper connection
+   * @returns {Promise<void>} - resolved after closing the Socket connection
    * @throws will throw an error if the AJAX request fail
    */
   async checkDomain(domainName, zoneAvailableCallback) {
@@ -72,13 +72,13 @@ class DomainCheckerClient {
 
   /**
    * Create WS connection and sends free zones through callback
-   * @param {String} id - id for WebSocketWrapper connection
+   * @param {String} id - id for Socket connection
    * @param {newAvailableDomain} callback - called when new information about available domains comes from a socket
    * @return {Promise<any>}
    */
   waitAnswers(id, callback) {
     return new Promise((resolve, reject) => {
-      this.socket = new WebSocketWrapper({
+      this.socket = new Socket({
         url: `${this.WS_ENDPOINT}/${id}`,
         onclose(event) {
           if (event.wasClean) {

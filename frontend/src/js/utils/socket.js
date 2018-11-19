@@ -1,8 +1,8 @@
 /**
- * Native WebSocketWrapper module
+ * Native Socket module
  *
  * @usage
- * const ws = new WebSocketWrapper({
+ * const ws = new Socket({
  *  host: 'localhost',
  *  path: 'socket',
  *  port: 8000,
@@ -10,7 +10,7 @@
  * })
  *
  */
-class WebSocketWrapper {
+class Socket {
   /**
    * Determining the necessary information for initialization WebSocket connection and open new WebSocket connection
    * @param {Object} options
@@ -34,11 +34,8 @@ class WebSocketWrapper {
       this.url = this.options.url;
     } else {
       const protocol = 'ws' + (this.options.secure ? 's' : '') + '://';
-
       const host = this.options.host || 'localhost';
-
       const path = this.options.path ? '/' + this.options.path : '';
-
       const port = this.options.port ? ':' + this.options.port : '';
 
       this.url = protocol + host + port + path;
@@ -47,7 +44,7 @@ class WebSocketWrapper {
   }
 
   /**
-   * Open new WebSocketWrapper connection using native WebSocketWrapper object
+   * Open new Socket connection using native Socket object
    */
   connect() {
     this.ws = new WebSocket(this.url);
@@ -67,7 +64,7 @@ class WebSocketWrapper {
   }
 
   /**
-   * Send data to WebSocketWrapper server in JSON format
+   * Send data to Socket server in JSON format
    * @param {Object} data - data to send
    */
   send(data) {
@@ -78,11 +75,11 @@ class WebSocketWrapper {
 
   /**
    * Checks whether the connection is open or not
-   * @returns {boolean} - true if WebSocketWrapper connection is open
+   * @returns {boolean} - true if Socket connection is open
    */
   get isOpen() {
     return this.ws.readyState === this.ws.OPEN;
   }
 }
 
-export default WebSocketWrapper;
+export default Socket;

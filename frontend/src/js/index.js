@@ -1,5 +1,5 @@
 import '@babel/polyfill';
-import Util from './util';
+import debounce from './utils/debounce';
 import DomainCheckerClient from './domainCheckerClient';
 
 (function () {
@@ -52,5 +52,5 @@ import DomainCheckerClient from './domainCheckerClient';
     });
   };
 
-  searchInput.addEventListener('input', Util.debounce(inputHandler, 1000));
+  searchInput.addEventListener('input', debounce(inputHandler, 1000));
 })();
