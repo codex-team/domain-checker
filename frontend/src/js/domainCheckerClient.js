@@ -85,6 +85,7 @@ class DomainCheckerClient {
       this.socket = new Socket({
         url: `${this.WS_ENDPOINT}/${id}`,
         onclose(event) {
+          // if connection closed without any errors such as server interruption or loss of internet connection
           if (event.wasClean) {
             resolve();
           } else {
