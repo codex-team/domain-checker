@@ -6,9 +6,7 @@
  *    |       id <-       | and puts task to queue            -> task    |
  */
 
-const path = require('path');
 const uuid = require('uuid/v4');
-const env = require('dotenv').config({ path: path.resolve(__dirname, '../../.env') }).parsed;
 const registry = require('../helpers/registry');
 
 // Generates random id for user request and pushes tasks to zoneCheck worker
@@ -25,7 +23,7 @@ const domainRoute = async (req, res) => {
     });
 
     res.status(200).json({
-      sucess: 1,
+      success: 1,
       data: { channelId: answersSocketId }
     });
   } catch (e) {
