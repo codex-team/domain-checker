@@ -30,7 +30,7 @@ import DomainCheckerClient from './domainCheckerClient';
    */
   const inputHandler = () => {
     resultsDiv.innerHTML = '';
-    statusDiv.innerText = 'Поиск...';
+    statusDiv.innerText = 'Searching...';
     const value = searchInput.value;
 
     /**
@@ -40,15 +40,15 @@ import DomainCheckerClient from './domainCheckerClient';
     const newAvailableDomainHandler = (availableTLD) => {
       let child = document.createElement('div');
 
-      child.innerHTML = `${value}.${availableTLD}`;
+      child.innerHTML = `<span class="results-domain-name">${value}</span>.${availableTLD}`;
 
       resultsDiv.appendChild(child);
     };
 
     client.checkDomain(value, newAvailableDomainHandler).then(() => {
-      statusDiv.innerText = 'Готово!';
+      statusDiv.innerText = '';
     }).catch(() => {
-      statusDiv.innerText = 'Ошибка!';
+      statusDiv.innerText = 'Error!';
     });
   };
 
