@@ -12,6 +12,11 @@
   },
   "scripts": {
     "build": "webpack -p",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch --mode=development"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.0.0",
+    "@codexteam/ajax": "^3.2.1",
+    "dotenv-webpack": "^1.5.7"
   }
 }
