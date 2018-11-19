@@ -32,7 +32,7 @@ class DomainCheckerClient {
    * @param {String} domainName - domain name to check
    * @param {Function} zoneAvailableCallback - called when we got a response with available zone
    * @returns {Promise<void>} - resolved after closing the Socket connection
-   * @throws will throw an error if the AJAX request fail
+   * @throws {Error} will throw an error if the AJAX request fail
    */
   async checkDomain(domainName, zoneAvailableCallback) {
     try {
