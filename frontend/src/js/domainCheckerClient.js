@@ -65,7 +65,7 @@ class DomainCheckerClient {
         throw new Error('Invalid response from server');
       }
     } catch (e) {
-      console.log(e);
+      console.log('Can\'t check domain\n' + e);
       throw e;
     }
   }
@@ -78,6 +78,10 @@ class DomainCheckerClient {
    */
   waitAnswers(id, callback) {
     return new Promise((resolve, reject) => {
+      /**
+       * Create WebSocket connection, setup event handlers.
+       * Save the Socket object to break the connection if necessary.
+       */
       this.socket = new Socket({
         url: `${this.WS_ENDPOINT}/${id}`,
         onclose(event) {
