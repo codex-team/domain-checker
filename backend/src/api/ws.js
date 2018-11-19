@@ -36,8 +36,6 @@ const wsRoute = async (ws, req) => {
     if (id.length === CHANNEL_ID_LENGTH) {
       let sent = false;
 
-      ws.send('OK');
-
       const queueResponse = QueueFactory.create(env.BROKER, {
         queueName: env.QUEUE_RESULTS_PREFIX + id,
         timeout: env.QUEUE_TIMEOUT,
