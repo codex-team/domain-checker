@@ -1,3 +1,4 @@
+import '../css/main.pcss';
 import '@babel/polyfill';
 import debounce from './utils/debounce';
 import DomainCheckerClient from './domainCheckerClient';
