@@ -7,17 +7,17 @@ import DomainCheckerClient from './domainCheckerClient';
   /**
    * @const {HTMLElement} text input for domain name
    */
-  const searchInput = document.getElementById('search-input');
+  const searchInput = document.getElementsByClassName('search-box__input')[0];
 
   /**
    * @const {HTMLElement} div, where results of search will show
    */
-  const resultsDiv = document.getElementById('results');
+  const resultsDiv = document.getElementsByClassName('results')[0];
 
   /**
    * @const {HTMLElement} div, that contains search-input and have loader indicator
    */
-  const searchWrapper = document.getElementById('search-wrapper');
+  const searchBox = document.getElementsByClassName('search-box')[0];
 
   /**
    * Client for domain-checker API. Required for getting available zones
@@ -31,7 +31,7 @@ import DomainCheckerClient from './domainCheckerClient';
    */
   const inputHandler = () => {
     resultsDiv.innerHTML = '';
-    searchWrapper.classList.add('loader');
+    searchBox.classList.add('search-box--loading');
     const value = searchInput.value;
 
     /**
@@ -39,17 +39,18 @@ import DomainCheckerClient from './domainCheckerClient';
      * @param availableTLD - new available TLD from client
      */
     const newAvailableDomainHandler = (availableTLD) => {
-      let child = document.createElement('div');
+      const child = document.createElement('div');
 
-      child.innerHTML = `<span class="results-domain-name">${value}</span>.${availableTLD}`;
+      child.classList.add('results__result');
+      child.innerHTML = `<span class="results__domain-name">${value}</span>.${availableTLD}`;
 
       resultsDiv.appendChild(child);
     };
 
     client.checkDomain(value, newAvailableDomainHandler).then(() => {
-      searchWrapper.classList.remove('loader');
+      // searchBox.classList.remove('search-box--loading');
     }).catch((e) => {
-      searchWrapper.classList.remove('loader');
+      // searchBox.classList.remove('search-box--loading');
       console.log(e);
     });
   };
