@@ -14,9 +14,9 @@ import DomainCheckerClient from './domainCheckerClient';
   const resultsDiv = document.getElementById('results');
 
   /**
-   * @const {HTMLElement} div, that indicate current state of search
+   * @const {HTMLElement} div, that contains search-input and have loader indicator
    */
-  const statusDiv = document.getElementById('status');
+  const searchWrapper = document.getElementById('search-wrapper');
 
   /**
    * Client for domain-checker API. Required for getting available zones
@@ -30,7 +30,7 @@ import DomainCheckerClient from './domainCheckerClient';
    */
   const inputHandler = () => {
     resultsDiv.innerHTML = '';
-    statusDiv.innerText = 'Searching...';
+    searchWrapper.classList.add('loader');
     const value = searchInput.value;
 
     /**
@@ -46,9 +46,10 @@ import DomainCheckerClient from './domainCheckerClient';
     };
 
     client.checkDomain(value, newAvailableDomainHandler).then(() => {
-      statusDiv.innerText = '';
-    }).catch(() => {
-      statusDiv.innerText = 'Error!';
+      searchWrapper.classList.remove('loader');
+    }).catch((e) => {
+      searchWrapper.classList.remove('loader');
+      console.log(e);
     });
   };
 
