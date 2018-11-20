@@ -14,23 +14,24 @@ html {
 }
 
 body {
-  min-width: 250px;
-  box-sizing: border-box;
-  width: 50%;
-  margin: 0 auto;
+  margin: 0;
   min-height: 100vh;
   position: relative;
 }
 
 .wrapper {
-  width: 100%;
   position: absolute;
-  top: 40%;
+  width: 50%;
+  margin: -41.5px 0 0 0;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%);
 }
 
 .search-box {
   position: relative;
   max-width: 500px;
+
   &__label {
     display: block;
     font-size: 16px;
@@ -38,6 +39,7 @@ body {
     padding-left: 18px;
     padding-bottom: 16px;
   }
+
   &__input {
     width: 100%;
     font-weight: 500;
@@ -47,6 +49,7 @@ body {
     border: 1px solid var(--borderColor);
     outline: none;
   }
+
   &--loading:after {
     position: absolute;
     content: '';
@@ -71,9 +74,11 @@ body {
   font-size: 20px;
   margin-top: 10px;
   padding-left: 18px;
+
   &__result {
     line-height: 2.3;
   }
+
   &__domain-name {
     color: var(--secondaryColor);
   }
