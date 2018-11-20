@@ -1,0 +1,83 @@
+:root {
+  --primaryColor: #000;
+  --secondaryColor: #9b9b9b;
+  --borderColor: #e6e6e6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+  "Droid Sans", "Helvetica Neue", sans-serif;
+  margin: 0;
+}
+
+body {
+  min-width: 250px;
+  max-width: 500px;
+  box-sizing: border-box;
+  width: 50%;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+}
+
+.wrapper {
+  width: 100%;
+  position: absolute;
+  top: 40%;
+}
+
+label {
+  display: block;
+  font-size: 16px;
+  color: var(--secondaryColor);
+  padding-left: 18px;
+  padding-bottom: 16px;
+}
+
+#search-input {
+  width: 100%;
+  font-weight: 500;
+  font-size: 20px;
+  padding: 12px 45px 12px 17px;
+  border-radius: 3px;
+  border: 1px solid var(--borderColor);
+  outline: none;
+}
+
+.loader::before {
+  position: absolute;
+  content: '';
+  width: 15px;
+  height: 15px;
+  margin: 15px 0;
+  right: 17px;
+  border: 2px solid var(--primaryColor);
+  border-top-color: var(--secondaryColor);
+  border-radius: 50%;
+  animation: rotating 2s infinite linear;
+}
+
+@keyframes rotating {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.results-domain-name {
+  color: var(--secondaryColor);
+}
+
+.list {
+  font-size: 20px;
+  margin-top: 10px;
+  padding-left: 18px;
+}
+
+.list div {
+  line-height: 2.3;
+}

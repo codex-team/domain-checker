@@ -20,7 +20,7 @@ module.exports = {
         }
       },
       {
-        test: /\.css$/,
+        test: /\.pcss$/,
         exclude: /node_modules/,
         use: ['style-loader', 'postcss-loader']
       }
