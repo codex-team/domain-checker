@@ -7,17 +7,17 @@ import DomainCheckerClient from './domainCheckerClient';
   /**
    * @const {HTMLElement} text input for domain name
    */
-  const searchInput = document.getElementsByClassName('search-box__input')[0];
+  const searchInput = document.querySelector('.search-box__input');
 
   /**
    * @const {HTMLElement} div, where results of search will show
    */
-  const resultsDiv = document.getElementsByClassName('results')[0];
+  const resultsDiv = document.querySelector('.results');
 
   /**
    * @const {HTMLElement} div, that contains search-input and have loader indicator
    */
-  const searchBox = document.getElementsByClassName('search-box')[0];
+  const searchBox = document.querySelector('.search-box');
 
   /**
    * Client for domain-checker API. Required for getting available zones
