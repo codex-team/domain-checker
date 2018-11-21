@@ -27,7 +27,8 @@
     "dependencies": {
         "@babel/polyfill": "^7.0.0",
         "@codexteam/ajax": "^3.2.1",
-        "dotenv-webpack": "^1.5.7"
+        "dotenv-webpack": "^1.5.7",
+        "normalize.css": "^8.0.1"
     },
     "browserslist": [
         "> 0.5%",
