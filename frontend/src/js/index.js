@@ -9,27 +9,28 @@ import DomainCheckerClient from './domainCheckerClient';
    */
   const CSS = {
     searchBox: 'search-box',
-    searchInput: 'search-box__input',
-    searchBoxLoading: 'search-box--loading',
-    resultsWrapper: 'results',
-    result: 'results__result',
-    resultsDomainName: 'results__domain-name'
+    searchBoxField: 'search-box__field',
+    searchBoxInput: 'search-box__input',
+    searchBoxFieldLoading: 'search-box__field--loading',
+    searchBoxResults: 'search-box__results',
+    searchBoxResultsItem: 'search-box__result-item',
+    searchBoxResultsDomainName: 'search-box__results-domain-name'
   };
+
+  /**
+   * @const {HTMLElement} div, that contains input and loader indicator
+   */
+  const searchBoxField = document.querySelector(`.${CSS.searchBoxField}`);
 
   /**
    * @const {HTMLElement} text input for domain name
    */
-  const searchInput = document.querySelector(`.${CSS.searchInput}`);
+  const searchBoxInput = document.querySelector(`.${CSS.searchBoxInput}`);
 
   /**
    * @const {HTMLElement} div, where results of search will show
    */
-  const resultsDiv = document.querySelector(`.${CSS.resultsWrapper}`);
-
-  /**
-   * @const {HTMLElement} div, that contains search-input and have loader indicator
-   */
-  const searchBox = document.querySelector(`.${CSS.searchBox}`);
+  const searchBoxResults = document.querySelector(`.${CSS.searchBoxResults}`);
 
   /**
    * Client for domain-checker API. Required for getting available zones
@@ -42,9 +43,9 @@ import DomainCheckerClient from './domainCheckerClient';
    * @type {function}
    */
   const inputHandler = () => {
-    resultsDiv.innerHTML = '';
-    searchBox.classList.add(CSS.searchBoxLoading);
-    const value = searchInput.value;
+    searchBoxResults.innerHTML = '';
+    searchBoxField.classList.add(CSS.searchBoxFieldLoading);
+    const value = searchBoxInput.value;
 
     /**
      * Used for handling new available TLD from client
@@ -53,19 +54,19 @@ import DomainCheckerClient from './domainCheckerClient';
     const newAvailableDomainHandler = (availableTLD) => {
       const child = document.createElement('div');
 
-      child.classList.add(CSS.result);
-      child.innerHTML = `<span class="${CSS.resultsDomainName}">${value}</span>.${availableTLD}`;
+      child.classList.add(CSS.searchBoxResultsItem);
+      child.innerHTML = `<span class="${CSS.searchBoxResultsDomainName}">${value}</span>.${availableTLD}`;
 
-      resultsDiv.appendChild(child);
+      searchBoxResults.appendChild(child);
     };
 
     client.checkDomain(value, newAvailableDomainHandler).then(() => {
-      searchBox.classList.remove(CSS.searchBoxLoading);
+      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
     }).catch((e) => {
-      searchBox.classList.remove(CSS.searchBoxLoading);
+      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
       console.log(e);
     });
   };
 
-  searchInput.addEventListener('input', debounce(inputHandler, 200));
+  searchBoxInput.addEventListener('input', debounce(inputHandler, 200));
 })();
