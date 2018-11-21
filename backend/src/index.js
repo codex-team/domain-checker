@@ -17,8 +17,7 @@ app.use('/api', api);
 if (process.env.NODE_ENV === 'dev') {
   app.use(morgan('dev'));
 
-  app.use('/', express.static(path.join(__dirname, '../../frontend/src/')));
-  app.use('/dist', express.static(path.join(__dirname, '../../frontend/dist/')));
+  app.use('/', express.static(path.join(__dirname, '../../frontend/dist/')));
 } else {
   app.use(morgan('combined'));
 }
