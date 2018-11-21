@@ -17,7 +17,7 @@ class RegistryError extends Error {}
 class Registry {
   /**
    * Creates an instance of Registry.
-   * Gets `BROKER` env var to create broker connection.
+   * Gets `REGISTRY_API_URL` env var to make requests to it
    */
   constructor() {
     this.registryApiUrl = process.env.REGISTRY_API_URL;
