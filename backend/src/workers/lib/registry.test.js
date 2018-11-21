@@ -1,16 +1,13 @@
 const path = require('path');
-const Redis = require('ioredis');
+const axios = require('axios');
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 
 const { Registry } = require('./registry');
 
-// Url to redis databse with user,password,host and port
-const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+const REGISTRY_API_URL = process.env.REGISTRY_API_URL;
 
 describe('Registry', () => {
-  // Database connection
-  let db;
   // Test task
   const task = {
     type: 'test',
@@ -25,13 +22,11 @@ describe('Registry', () => {
 
   // Create redis connection and registry
   beforeAll(() => {
-    db = new Redis(REDIS_URL);
     registry = new Registry();
   });
 
   // Close all connections
   afterAll(async () => {
-    await db.quit();
     await registry.queueConfig.dbClient.quit();
   });
 
@@ -40,24 +35,25 @@ describe('Registry', () => {
       // Send message via queue
       await registry.pushTask(workerName, task);
       // Receive it via plain connection
-      const response = await db.lindex(workerName, 0);
+      const response = await axios.get(REGISTRY_API_URL + '/popTask/' + workerName, { responseType: 'json' });
 
-      expect(JSON.parse(response)).toEqual(task);
+      expect(response.data).toEqual({ task });
     } catch (e) {
-      console.error(e);
-      return e;
+      throw e;
     }
   });
 
   it('should pop task for worker', async () => {
     try {
+      // Push task first
+      await axios.put(REGISTRY_API_URL + '/pushTask/' + workerName, task);
+
       // Pop task from registry
       const received = await registry.popTask(workerName);
 
-      expect(received).toEqual(task);
+      expect(received).toEqual({ task });
     } catch (e) {
-      console.error(e);
-      return e;
+      throw e;
     }
   });
 });
