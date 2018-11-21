@@ -5,19 +5,30 @@ import DomainCheckerClient from './domainCheckerClient';
 
 (function () {
   /**
+   * @const {object} CSS classes for necessary elements and their states
+   */
+  const CSS = {
+    searchInput: 'search-box__input',
+    resultsWrapper: 'results',
+    result: 'results__result',
+    searchBox: 'search-box',
+    searchBoxLoading: 'search-box--loading',
+    resultsDomainName: 'results__domain-name'
+  };
+  /**
    * @const {HTMLElement} text input for domain name
    */
-  const searchInput = document.querySelector('.search-box__input');
+  const searchInput = document.querySelector(`.${CSS.searchInput}`);
 
   /**
    * @const {HTMLElement} div, where results of search will show
    */
-  const resultsDiv = document.querySelector('.results');
+  const resultsDiv = document.querySelector(`.${CSS.resultsWrapper}`);
 
   /**
    * @const {HTMLElement} div, that contains search-input and have loader indicator
    */
-  const searchBox = document.querySelector('.search-box');
+  const searchBox = document.querySelector(`.${CSS.searchBox}`);
 
   /**
    * Client for domain-checker API. Required for getting available zones
@@ -31,7 +42,7 @@ import DomainCheckerClient from './domainCheckerClient';
    */
   const inputHandler = () => {
     resultsDiv.innerHTML = '';
-    searchBox.classList.add('search-box--loading');
+    searchBox.classList.add(CSS.searchBoxLoading);
     const value = searchInput.value;
 
     /**
@@ -41,16 +52,16 @@ import DomainCheckerClient from './domainCheckerClient';
     const newAvailableDomainHandler = (availableTLD) => {
       const child = document.createElement('div');
 
-      child.classList.add('results__result');
-      child.innerHTML = `<span class="results__domain-name">${value}</span>.${availableTLD}`;
+      child.classList.add(CSS.result);
+      child.innerHTML = `<span class="${CSS.resultsDomainName}">${value}</span>.${availableTLD}`;
 
       resultsDiv.appendChild(child);
     };
 
     client.checkDomain(value, newAvailableDomainHandler).then(() => {
-      // searchBox.classList.remove('search-box--loading');
+      searchBox.classList.remove(CSS.searchBoxLoading);
     }).catch((e) => {
-      // searchBox.classList.remove('search-box--loading');
+      searchBox.classList.remove(CSS.searchBoxLoading);
       console.log(e);
     });
   };
