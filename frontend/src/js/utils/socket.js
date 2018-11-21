@@ -74,12 +74,12 @@ class Socket {
   }
 
   /**
-   * method closes the WebSocket connection or connection attempt, if any. If the connection is already CLOSED, this method does nothing.
+   * Method closes the WebSocket connection or connection attempt. If the connection is already CLOSED, this method does nothing.
    * @param {number} [code] - a numeric value indicating the status code explaining why the connection is being closed.
    * @param {string} [reason] - a human-readable string explaining why the connection is closing.
    */
   close(code, reason) {
-    this.ws.close(...arguments);
+    this.ws.close(code, reason);
   }
 
   /**
