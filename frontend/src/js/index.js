@@ -15,6 +15,7 @@ import DomainCheckerClient from './domainCheckerClient';
     searchBoxLoading: 'search-box--loading',
     resultsDomainName: 'results__domain-name'
   };
+
   /**
    * @const {HTMLElement} text input for domain name
    */
