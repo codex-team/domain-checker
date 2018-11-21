@@ -1,22 +1,35 @@
+import '../css/main.pcss';
 import '@babel/polyfill';
 import debounce from './utils/debounce';
 import DomainCheckerClient from './domainCheckerClient';
 
 (function () {
   /**
+   * @const {object} CSS classes for necessary elements and their states
+   */
+  const CSS = {
+    searchBox: 'search-box',
+    searchInput: 'search-box__input',
+    searchBoxLoading: 'search-box--loading',
+    resultsWrapper: 'results',
+    result: 'results__result',
+    resultsDomainName: 'results__domain-name'
+  };
+
+  /**
    * @const {HTMLElement} text input for domain name
    */
-  const searchInput = document.getElementById('search-input');
+  const searchInput = document.querySelector(`.${CSS.searchInput}`);
 
   /**
    * @const {HTMLElement} div, where results of search will show
    */
-  const resultsDiv = document.getElementById('results');
+  const resultsDiv = document.querySelector(`.${CSS.resultsWrapper}`);
 
   /**
-   * @const {HTMLElement} div, that indicate current state of search
+   * @const {HTMLElement} div, that contains search-input and have loader indicator
    */
-  const statusDiv = document.getElementById('status');
+  const searchBox = document.querySelector(`.${CSS.searchBox}`);
 
   /**
    * Client for domain-checker API. Required for getting available zones
@@ -30,7 +43,7 @@ import DomainCheckerClient from './domainCheckerClient';
    */
   const inputHandler = () => {
     resultsDiv.innerHTML = '';
-    statusDiv.innerText = 'Поиск...';
+    searchBox.classList.add(CSS.searchBoxLoading);
     const value = searchInput.value;
 
     /**
@@ -38,19 +51,21 @@ import DomainCheckerClient from './domainCheckerClient';
      * @param availableTLD - new available TLD from client
      */
     const newAvailableDomainHandler = (availableTLD) => {
-      let child = document.createElement('div');
+      const child = document.createElement('div');
 
-      child.innerHTML = `${value}.${availableTLD}`;
+      child.classList.add(CSS.result);
+      child.innerHTML = `<span class="${CSS.resultsDomainName}">${value}</span>.${availableTLD}`;
 
       resultsDiv.appendChild(child);
     };
 
     client.checkDomain(value, newAvailableDomainHandler).then(() => {
-      statusDiv.innerText = 'Готово!';
-    }).catch(() => {
-      statusDiv.innerText = 'Ошибка!';
+      searchBox.classList.remove(CSS.searchBoxLoading);
+    }).catch((e) => {
+      searchBox.classList.remove(CSS.searchBoxLoading);
+      console.log(e);
     });
   };
 
-  searchInput.addEventListener('input', debounce(inputHandler, 1000));
+  searchInput.addEventListener('input', debounce(inputHandler, 200));
 })();

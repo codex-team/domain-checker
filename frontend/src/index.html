@@ -6,15 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Domain checker🌎</title>
     <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="../dist/main.css">
 </head>
 
 <body>
+<div class="wrapper">
+    <div class="search-box">
+        <label class="search-box__label" for="search-input">Enter domain name to check</label>
+        <input type="text" class="search-box__input" id="search-input" placeholder="Type domain">
+    </div>
+    <div class="results"></div>
+</div>
 
-    <h1>Hello, World!</h1>
-    <input type="text" id="search-input" placeholder="Type domain">
-    <div id="status"></div>
-    <div id="results" class="list"></div>
 
 <script src="../dist/bundle.js"></script>
 </body>
