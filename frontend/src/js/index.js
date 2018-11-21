@@ -8,11 +8,11 @@ import DomainCheckerClient from './domainCheckerClient';
    * @const {object} CSS classes for necessary elements and their states
    */
   const CSS = {
+    searchBox: 'search-box',
     searchInput: 'search-box__input',
+    searchBoxLoading: 'search-box--loading',
     resultsWrapper: 'results',
     result: 'results__result',
-    searchBox: 'search-box',
-    searchBoxLoading: 'search-box--loading',
     resultsDomainName: 'results__domain-name'
   };
 
