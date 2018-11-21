@@ -64,13 +64,22 @@ class Socket {
   }
 
   /**
-   * Send data to Socket server in JSON format
+   * Send data to server in JSON format
    * @param {Object} data - data to send
    */
   send(data) {
     data = JSON.stringify(data);
 
     this.ws.send(data);
+  }
+
+  /**
+   * method closes the WebSocket connection or connection attempt, if any. If the connection is already CLOSED, this method does nothing.
+   * @param {number} [code] - a numeric value indicating the status code explaining why the connection is being closed.
+   * @param {string} [reason] - a human-readable string explaining why the connection is closing.
+   */
+  close(code, reason) {
+    this.ws.close(...arguments);
   }
 
   /**
