@@ -67,5 +67,5 @@ import DomainCheckerClient from './domainCheckerClient';
     });
   };
 
-  searchInput.addEventListener('input', debounce(inputHandler, 1000));
+  searchInput.addEventListener('input', debounce(inputHandler, 200));
 })();
