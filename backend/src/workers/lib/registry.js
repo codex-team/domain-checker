@@ -1,5 +1,4 @@
-const Redis = require('ioredis');
-const { QueueFactory } = require('queue');
+const axios = require('axios');
 
 /**
  * Registry error.
@@ -11,10 +10,9 @@ class RegistryError extends Error {}
  * Registry. Used to manage worker tasks.
  * Put tasks by calling `Registry.putTask(workerName, payload)`.
  * Pop tasks by calling `Registry.popTask(workerName)`.
- * @property {broker} broker Broker name
- * @property {Object} queueConfig Queue config which is passed to QueueFactory.create(broker, queueConfig)
- * @property {any} dbClient Database/broker connection client. Passed to Queue to reuse existent connection
- * @param {Queue[]} queues Registred queues. {[workerName]: Queue}
+ * @property {string} registryUrl Registry API url, taken from env.REGISTRY_API_URL. E.g. http://registry.com/api
+ * @property {string} popTaskUrl URL of Registry API's popTask method
+ * @property {string} pushTask URL of Registry API's pushTask method
  */
 class Registry {
   /**
@@ -22,16 +20,9 @@ class Registry {
    * Gets `BROKER` env var to create broker connection.
    */
   constructor() {
-    this.broker = process.env.BROKER;
-    this.queueConfig = {};
-
-    if (this.broker === 'redis') {
-      this.queueConfig.dbClient = new Redis(process.env.REDIS_URL);
-    } else {
-      throw new RegistryError('Unsupported broker');
-    }
-
-    this.queues = {};
+    this.registryApiUrl = process.env.REGISTRY_API_URL;
+    this.popTaskUrl = this.registryApiUrl + '/popTask/';
+    this.pushTaskUrl = this.registryApiUrl + '/pushTask/';
   }
 
   /**
@@ -40,16 +31,16 @@ class Registry {
    * @returns {Object} Task from registry
    */
   async popTask(workerName) {
-    if (!this.queues[workerName]) {
-      this.queues[workerName] = QueueFactory.create(this.broker, {
-        ...this.queueConfig,
-        queueName: workerName
-      });
+    const resp = await axios.get(this.popTaskUrl + workerName, { responseType: 'json' });
+
+    if (resp.status == 505) {
+      throw new RegistryError('Registry server error');
+    }
+    if (resp.status == 202) {
+      return null;
     }
 
-    const task = await this.queues[workerName].pop();
-
-    return task;
+    return resp.data;
   }
 
   /**
@@ -58,14 +49,11 @@ class Registry {
    * @param {any} payload Task
    */
   async pushTask(workerName, payload) {
-    if (!this.queues[workerName]) {
-      this.queues[workerName] = QueueFactory.create(this.broker, {
-        ...this.queueConfig,
-        queueName: workerName
-      });
-    }
+    const resp = await axios.put(this.pushTaskUrl + workerName, payload);
 
-    await this.queues[workerName].push(payload);
+    if (resp.status === 500) {
+      throw new RegistryError("Can't push task to registry");
+    }
   }
 }
 
