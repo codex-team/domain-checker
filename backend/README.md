@@ -10,6 +10,7 @@
 
 #### Workers
 
+- Set up [Registry](https://github.com/codex-team/registry) on some server
 - Install [pm2](https://github.com/Unitech/PM2/)
 - `cd src/workers`
 - Edit `ecosystem.config.js` if needed. E.g scaling.
