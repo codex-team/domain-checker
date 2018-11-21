@@ -22,10 +22,9 @@ body {
 .wrapper {
   position: absolute;
   width: 50%;
-  margin: -41.5px 0 0 0;
   left: 50%;
   top: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
 }
 
 .search-box {
@@ -50,17 +49,17 @@ body {
     outline: none;
   }
 
-  &--loading:after {
+  &--loading::after {
     position: absolute;
     content: '';
     width: 15px;
     height: 15px;
     bottom: 15px;
     right: 17px;
-    border: 2px solid var(--primaryColor);
-    border-top-color: var(--secondaryColor);
+    border: 2px solid var(--secondaryColor);
+    border-top-color: var(--primaryColor);
     border-radius: 50%;
-    animation: rotating 2s infinite linear;
+    animation: rotating 0.6s infinite linear;
   }
 }
 
