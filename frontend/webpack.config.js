@@ -1,5 +1,6 @@
 const path = require('path');
 const Dotenv = require('dotenv-webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: './src/js/index.js',
@@ -20,13 +21,20 @@ module.exports = {
         }
       },
       {
-        test: /\.pcss$/,
+        test: /\.(pc|c)ss$/,
         exclude: /node_modules/,
-        use: ['style-loader', 'postcss-loader']
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'postcss-loader'
+        ]
       }
     ]
   },
   plugins: [
-    new Dotenv()
+    new Dotenv(),
+    new MiniCssExtractPlugin({
+      filename: 'main.css'
+    })
   ]
 };
