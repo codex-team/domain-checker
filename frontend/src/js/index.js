@@ -1,5 +1,6 @@
 import '../styles/main.pcss';
 import '@babel/polyfill';
+import 'custom-event-polyfill';
 import debounce from './utils/debounce';
 import DomainCheckerClient from './domainCheckerClient';
 
