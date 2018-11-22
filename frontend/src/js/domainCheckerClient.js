@@ -1,4 +1,5 @@
 import Socket from './utils/socket';
+import validateDomainName from './utils/validateDomainName';
 import ajax from '@codexteam/ajax';
 
 /**
@@ -10,35 +11,58 @@ import ajax from '@codexteam/ajax';
  */
 
 /**
+ * Event that contain information about available tlds
+ * @class NewAvailableTldEvent
+ * @extends CustomEvent
+ */
+class NewAvailableTldEvent extends CustomEvent {
+  /**
+   * @param {string} domainName - checked domain name
+   * @param {string} tld - available tld for domain name
+   */
+  constructor(domainName, tld) {
+    super('message', {
+      detail: {
+        domainName: domainName,
+        'tld': tld
+      }
+    });
+  }
+}
+
+/**
  * DomainCheckerClient for domain-checker server
  */
-class DomainCheckerClient {
+class DomainCheckerClient extends EventTarget {
   /**
    * Setup necessary variables
    */
   constructor() {
+    super();
     this.API_ENDPOINT = process.env.API_ENDPOINT;
     this.WS_ENDPOINT = process.env.WS_ENDPOINT;
   }
 
   /**
-   * Called when new information about available domains comes from a socket
-   * @callback newAvailableDomain
-   * @param {String} domainZone - available domain zone for requested domain
-   */
-
-  /**
-   * Main method of the DomainCheckerClient class. Return available domains through the callback function.
+   * Main method of the DomainCheckerClient class. Return information about available domains through the message event.
    * @param {String} domainName - domain name to check
-   * @param {Function} zoneAvailableCallback - called when we got a response with available zone
-   * @returns {Promise<void>} - resolved after closing the Socket connection
-   * @throws {Error} will throw an error if the AJAX request fail
    */
-  async checkDomain(domainName, zoneAvailableCallback) {
+  async checkDomain(domainName) {
+    // close socket connection if exist
+    if (this.socket && this.socket.isOpen) {
+      console.log('Terminate existing connection');
+      this.dispatchEvent(new Event('breakSearch'));
+      this.socket.terminate();
+    }
+
+    this.checkingDomainName = domainName;
+    if (validateDomainName(domainName) !== true) {
+      this.dispatchEvent(new Event('breakSearch'));
+      return;
+    }
+
     try {
-      if (this.socket && this.socket.isOpen) {
-        this.socket.close();
-      }
+      this.dispatchEvent(new Event('startSearch'));
       /**
        * Send name to server, get WebSocket id for accepting free zones
        * @type {checkDomainResponse}
@@ -48,57 +72,55 @@ class DomainCheckerClient {
       });
 
       if (response.success !== 1) {
-        throw new Error('Server error');
+        this.dispatchEvent(new CustomEvent('error', {
+          detail: 'Server error'
+        }));
       }
 
       if ('data' in response && 'channelId' in response.data) {
-        return new Promise((resolve, reject) => {
-          this.waitAnswers(response.data.channelId, zoneAvailableCallback)
-            .then(() => {
-              console.log('All zones checked');
-              resolve();
-            }).catch((error) => {
-              reject(error);
-            });
-        });
+        this.waitAnswers(response.data.channelId);
       } else {
-        throw new Error('Invalid response from server');
+        this.dispatchEvent(new CustomEvent('error', {
+          detail: 'Invalid response from server'
+        }));
       }
     } catch (e) {
-      console.log('Can\'t check domain\n' + e);
-      throw e;
+      this.dispatchEvent(new CustomEvent('error', {
+        detail: 'Server error'
+      }));
     }
   }
 
   /**
-   * Create WS connection and sends free zones through callback
+   * Create WS connection and waiting for answers
    * @param {String} id - id for Socket connection
-   * @param {newAvailableDomain} callback - called when new information about available domains comes from a socket
-   * @return {Promise<any>}
    */
-  waitAnswers(id, callback) {
-    return new Promise((resolve, reject) => {
-      /**
-       * Create WebSocket connection, setup event handlers.
-       * Save the Socket object to break the connection if necessary.
-       */
-      this.socket = new Socket({
-        url: `${this.WS_ENDPOINT}/${id}`,
-        onclose(event) {
-          // if connection closed without any errors such as server interruption or loss of internet connection
-          if (event.wasClean) {
-            resolve();
-          } else {
-            reject(new Error('Connection break'));
-          }
-        },
-        onmessage(event) {
-          callback(event.data);
-        },
-        onerror(error) {
-          reject(error);
+  waitAnswers(id) {
+    /**
+     * Create WebSocket connection, setup event handlers.
+     * Save the Socket object to break the connection if necessary.
+     */
+    this.socket = new Socket({
+      url: `${this.WS_ENDPOINT}/${id}`,
+      onclose: (event) => {
+        // if connection closed without any errors such as server interruption or loss of internet connection
+        if (event.wasClean) {
+          this.dispatchEvent(new Event('endSearch'));
+        } else {
+          this.dispatchEvent(new CustomEvent('error', {
+            detail: 'Connection break'
+          }));
+          this.dispatchEvent(new Event('breakSearch'));
         }
-      });
+      },
+      onmessage: (event) => {
+        this.dispatchEvent(new NewAvailableTldEvent(this.checkingDomainName, event.data));
+      },
+      onerror: () => {
+        this.dispatchEvent(new CustomEvent('error', {
+          detail: 'WebSocket error'
+        }));
+      }
     });
   }
 }

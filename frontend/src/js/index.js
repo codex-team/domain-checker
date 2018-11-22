@@ -1,7 +1,6 @@
 import '../styles/main.pcss';
 import '@babel/polyfill';
 import debounce from './utils/debounce';
-import validateDomainName from './utils/validateDomainName';
 import DomainCheckerClient from './domainCheckerClient';
 
 (function () {
@@ -40,39 +39,43 @@ import DomainCheckerClient from './domainCheckerClient';
   const client = new DomainCheckerClient();
 
   /**
+   * Used for handling new available TLD from client
+   * @param {NewAvailableTldEvent} event - new available TLD from client
+   */
+  const newAvailableDomainHandler = (event) => {
+    const child = document.createElement('div');
+
+    child.classList.add(CSS.searchBoxResultsItem);
+    child.innerHTML = `<span class="${CSS.searchBoxResultsDomainName}">${event.detail.domainName}</span>.${event.detail.tld}`;
+
+    searchBoxResults.appendChild(child);
+  };
+
+  client.addEventListener('message', newAvailableDomainHandler);
+
+  client.addEventListener('startSearch', () => {
+    searchBoxField.classList.add(CSS.searchBoxFieldLoading);
+  });
+
+  client.addEventListener('endSearch', () => {
+    searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
+  });
+
+  client.addEventListener('breakSearch', () => {
+    searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
+  });
+
+  client.addEventListener('error', () => {
+    searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
+  });
+
+  /**
    * Called when the user enters something in input field
-   * @type {function}
+   * @const {function}
    */
   const inputHandler = () => {
     searchBoxResults.innerHTML = '';
-    const value = searchBoxInput.value;
-
-    if (validateDomainName(value) !== true) {
-      searchBoxResults.innerHTML = '';
-      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
-      return;
-    }
-    searchBoxField.classList.add(CSS.searchBoxFieldLoading);
-
-    /**
-     * Used for handling new available TLD from client
-     * @param availableTLD - new available TLD from client
-     */
-    const newAvailableDomainHandler = (availableTLD) => {
-      const child = document.createElement('div');
-
-      child.classList.add(CSS.searchBoxResultsItem);
-      child.innerHTML = `<span class="${CSS.searchBoxResultsDomainName}">${value}</span>.${availableTLD}`;
-
-      searchBoxResults.appendChild(child);
-    };
-
-    client.checkDomain(value, newAvailableDomainHandler).then(() => {
-      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
-    }).catch((e) => {
-      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
-      console.log(e);
-    });
+    client.checkDomain(searchBoxInput.value);
   };
 
   searchBoxInput.addEventListener('input', debounce(inputHandler, 200));
