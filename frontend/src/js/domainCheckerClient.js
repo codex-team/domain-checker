@@ -50,14 +50,15 @@ class DomainCheckerClient extends EventTarget {
   async checkDomain(domainName) {
     // close socket connection if exist
     if (this.socket && this.socket.isOpen) {
-      console.log('Terminate existing connection');
       this.dispatchEvent(new Event('breakSearch'));
       this.socket.terminate();
     }
 
     this.checkingDomainName = domainName;
+
+    // check domain name for correctness
     if (validateDomainName(domainName) !== true) {
-      this.dispatchEvent(new Event('breakSearch'));
+      this.dispatchError('Invalid domain name');
       return;
     }
 
@@ -72,22 +73,16 @@ class DomainCheckerClient extends EventTarget {
       });
 
       if (response.success !== 1) {
-        this.dispatchEvent(new CustomEvent('error', {
-          detail: 'Server error'
-        }));
+        this.dispatchError('Server error');
       }
 
       if ('data' in response && 'channelId' in response.data) {
         this.waitAnswers(response.data.channelId);
       } else {
-        this.dispatchEvent(new CustomEvent('error', {
-          detail: 'Invalid response from server'
-        }));
+        this.dispatchError('Invalid response from server');
       }
     } catch (e) {
-      this.dispatchEvent(new CustomEvent('error', {
-        detail: 'Server error'
-      }));
+      this.dispatchError('Server error');
     }
   }
 
@@ -107,21 +102,27 @@ class DomainCheckerClient extends EventTarget {
         if (event.wasClean) {
           this.dispatchEvent(new Event('endSearch'));
         } else {
-          this.dispatchEvent(new CustomEvent('error', {
-            detail: 'Connection break'
-          }));
-          this.dispatchEvent(new Event('breakSearch'));
+          this.dispatchError('Connection break');
         }
       },
       onmessage: (event) => {
         this.dispatchEvent(new NewAvailableTldEvent(this.checkingDomainName, event.data));
       },
       onerror: () => {
-        this.dispatchEvent(new CustomEvent('error', {
-          detail: 'WebSocket error'
-        }));
+        this.dispatchError('WebSocket error');
       }
     });
+  }
+
+  /**
+   * Dispatch error and break search
+   * @param {string} description - error description
+   */
+  dispatchError(description) {
+    this.dispatchEvent(new CustomEvent('error', {
+      detail: description
+    }));
+    this.dispatchEvent(new Event('breakSearch'));
   }
 }
 
