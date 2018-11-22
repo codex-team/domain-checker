@@ -15,7 +15,6 @@ import DomainCheckerClient from './domainCheckerClient';
     searchBoxFieldLoading: 'search-box__field--loading',
     searchBoxResults: 'search-box__results',
     searchBoxResultsItem: 'search-box__result-item',
-    searchBoxResultsError: 'search-box__result-error',
     searchBoxResultsDomainName: 'search-box__results-domain-name'
   };
 
@@ -48,10 +47,8 @@ import DomainCheckerClient from './domainCheckerClient';
     searchBoxResults.innerHTML = '';
     const value = searchBoxInput.value;
 
-    const validationResult = validateDomainName(value);
-
-    if (validationResult !== true) {
-      searchBoxResults.innerHTML = `<div class="${CSS.searchBoxResultsError}">${validationResult}</div>`;
+    if (validateDomainName(value) !== true) {
+      searchBoxResults.innerHTML = '';
       searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
       return;
     }
