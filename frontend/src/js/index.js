@@ -1,6 +1,7 @@
 import '../styles/main.pcss';
 import '@babel/polyfill';
 import debounce from './utils/debounce';
+import validateDomainName from './utils/validateDomainName';
 import DomainCheckerClient from './domainCheckerClient';
 
 (function () {
@@ -14,6 +15,7 @@ import DomainCheckerClient from './domainCheckerClient';
     searchBoxFieldLoading: 'search-box__field--loading',
     searchBoxResults: 'search-box__results',
     searchBoxResultsItem: 'search-box__result-item',
+    searchBoxResultsError: 'search-box__result-error',
     searchBoxResultsDomainName: 'search-box__results-domain-name'
   };
 
@@ -44,8 +46,16 @@ import DomainCheckerClient from './domainCheckerClient';
    */
   const inputHandler = () => {
     searchBoxResults.innerHTML = '';
-    searchBoxField.classList.add(CSS.searchBoxFieldLoading);
     const value = searchBoxInput.value;
+
+    const validationResult = validateDomainName(value);
+
+    if (validationResult !== true) {
+      searchBoxResults.innerHTML = `<div class="${CSS.searchBoxResultsError}">${validationResult}</div>`;
+      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
+      return;
+    }
+    searchBoxField.classList.add(CSS.searchBoxFieldLoading);
 
     /**
      * Used for handling new available TLD from client
