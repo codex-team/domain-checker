@@ -54,19 +54,19 @@ import DomainCheckerClient from './domainCheckerClient';
 
   client.addEventListener('message', newAvailableDomainHandler);
 
-  client.addEventListener('startSearch', () => {
+  client.addEventListener('searchStart', () => {
     searchBoxField.classList.add(CSS.searchBoxFieldLoading);
   });
 
-  client.addEventListener('endSearch', () => {
+  client.addEventListener('searchEnd', () => {
     searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
   });
 
-  client.addEventListener('breakSearch', () => {
+  client.addEventListener('searchAbort', () => {
     searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
   });
 
-  client.addEventListener('error', () => {
+  client.addEventListener('searchError', () => {
     searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
   });
 

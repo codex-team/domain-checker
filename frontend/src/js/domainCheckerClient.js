@@ -50,7 +50,7 @@ class DomainCheckerClient extends EventTarget {
   async checkDomain(domainName) {
     // close socket connection if exist
     if (this.socket && this.socket.isOpen) {
-      this.dispatchEvent(new CustomEvent('breakSearch'));
+      this.dispatchEvent(new CustomEvent('searchAbort'));
       this.socket.terminate();
     }
 
@@ -63,7 +63,7 @@ class DomainCheckerClient extends EventTarget {
     }
 
     try {
-      this.dispatchEvent(new CustomEvent('startSearch'));
+      this.dispatchEvent(new CustomEvent('searchStart'));
       /**
        * Send name to server, get WebSocket id for accepting free zones
        * @type {checkDomainResponse}
@@ -100,7 +100,7 @@ class DomainCheckerClient extends EventTarget {
       onclose: (event) => {
         // if connection closed without any errors such as server interruption or loss of internet connection
         if (event.wasClean) {
-          this.dispatchEvent(new CustomEvent('endSearch'));
+          this.dispatchEvent(new CustomEvent('searchEnd'));
         } else {
           this.dispatchError('Connection break');
         }
@@ -119,10 +119,10 @@ class DomainCheckerClient extends EventTarget {
    * @param {string} description - error description
    */
   dispatchError(description) {
-    this.dispatchEvent(new CustomEvent('error', {
+    this.dispatchEvent(new CustomEvent('searchError', {
       detail: description
     }));
-    this.dispatchEvent(new CustomEvent('breakSearch'));
+    this.dispatchEvent(new CustomEvent('searchAbort'));
   }
 }
 
