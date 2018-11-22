@@ -3,7 +3,7 @@ const axios = require('axios');
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 
-const { Registry } = require('./registry');
+const { Worker } = require('./worker');
 
 /**
  * @const {string} Registry API url
@@ -21,17 +21,17 @@ describe('Registry', () => {
   const workerName = 'test';
 
   // Registry
-  let registry;
+  let worker;
 
   // Create redis connection and registry
   beforeAll(() => {
-    registry = new Registry();
+    worker = new Worker(workerName);
   });
 
   it('should push task to worker', async () => {
     try {
       // Send message via queue
-      await registry.pushTask(workerName, task);
+      await worker.pushTask(workerName, task);
       // Receive it via http request
       const response = await axios.get(REGISTRY_API_URL + '/popTask/' + workerName, { responseType: 'json' });
 
@@ -47,9 +47,23 @@ describe('Registry', () => {
       await axios.put(REGISTRY_API_URL + '/pushTask/' + workerName, task);
 
       // Pop task from registry
-      const received = await registry.popTask(workerName);
+      const received = await worker.popTask(workerName);
 
       expect(received).toEqual({ task });
+    } catch (e) {
+      throw e;
+    }
+  });
+
+  it('should return null when popping from empty task queue', async () => {
+    // Set big timeout so Jest won't exit
+    jest.setTimeout(40000);
+
+    try {
+      // Pop task from empty task queue
+      const received = await worker.popTask('nonexistantworker');
+
+      expect(received).toEqual(null);
     } catch (e) {
       throw e;
     }

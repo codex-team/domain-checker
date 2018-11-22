@@ -1,5 +1,4 @@
-const { Registry } = require('./registry');
-const registry = require('../../helpers/registry');
+const axios = require('axios');
 
 /**
  * Worker error.
@@ -12,7 +11,9 @@ class WorkerError extends Error {}
  * Inherited worker should implement `handle` method.
  * Start worker by calling `Worker.start()`
  * @property {string} name Worker name
- * @property {Registry} registry Worker registry
+ * @property {string} registryUrl Registry API url, taken from env.REGISTRY_API_URL. E.g. http://registry.com/api
+ * @property {string} popTaskUrl URL of Registry API's popTask method
+ * @property {string} pushTask URL of Registry API's pushTask method
  */
 class Worker {
   /**
@@ -22,11 +23,9 @@ class Worker {
   constructor(name) {
     this.name = name;
 
-    if (!(registry instanceof Registry)) {
-      throw new Error('registry argument is not instance of Registry');
-    }
-
-    this.registry = registry;
+    this.registryApiUrl = process.env.REGISTRY_API_URL;
+    this.popTaskUrl = this.registryApiUrl + '/popTask/';
+    this.pushTaskUrl = this.registryApiUrl + '/pushTask/';
   }
 
   /**
@@ -63,13 +62,22 @@ class Worker {
    * @returns {Object} Task from registry
    */
   async popTask(workerName) {
-    try {
-      const task = await this.registry.popTask(workerName);
+    let resp;
 
-      return task;
+    try {
+      resp = await axios.get(this.popTaskUrl + workerName, { responseType: 'json' });
     } catch (e) {
       throw new WorkerError(e);
     }
+
+    if (resp.status == 505) {
+      throw new WorkerError('Registry API error');
+    }
+    if (resp.status == 202) {
+      return null;
+    }
+
+    return resp.data;
   }
 
   /**
@@ -78,10 +86,16 @@ class Worker {
    * @param {any} payload Task
    */
   async pushTask(workerName, payload) {
+    let resp;
+
     try {
-      await this.registry.pushTask(workerName, payload);
+      resp = await axios.put(this.pushTaskUrl + workerName, payload);
     } catch (e) {
       throw new WorkerError(e);
+    }
+
+    if (resp.status === 500) {
+      throw new WorkerError("Can't push task to registry");
     }
   }
 }
