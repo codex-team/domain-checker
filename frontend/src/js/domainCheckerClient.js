@@ -100,7 +100,7 @@ class DomainCheckerClient extends EventTarget {
       onclose: (event) => {
         // if connection closed without any errors such as server interruption or loss of internet connection
         if (event.wasClean) {
-          this.dispatchEvent(new Event('endSearch'));
+          this.dispatchEvent(new CustomEvent('endSearch'));
         } else {
           this.dispatchError('Connection break');
         }
