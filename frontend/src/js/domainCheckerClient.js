@@ -50,7 +50,7 @@ class DomainCheckerClient extends EventTarget {
   async checkDomain(domainName) {
     // close socket connection if exist
     if (this.socket && this.socket.isOpen) {
-      this.dispatchEvent(new Event('breakSearch'));
+      this.dispatchEvent(new CustomEvent('breakSearch'));
       this.socket.terminate();
     }
 
@@ -63,7 +63,7 @@ class DomainCheckerClient extends EventTarget {
     }
 
     try {
-      this.dispatchEvent(new Event('startSearch'));
+      this.dispatchEvent(new CustomEvent('startSearch'));
       /**
        * Send name to server, get WebSocket id for accepting free zones
        * @type {checkDomainResponse}
@@ -122,7 +122,7 @@ class DomainCheckerClient extends EventTarget {
     this.dispatchEvent(new CustomEvent('error', {
       detail: description
     }));
-    this.dispatchEvent(new Event('breakSearch'));
+    this.dispatchEvent(new CustomEvent('breakSearch'));
   }
 }
 
