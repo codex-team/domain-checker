@@ -56,7 +56,8 @@ import DomainCheckerClient from './domainCheckerClient';
     onSearchEnd() {
       searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
     },
-    onSearchError() {
+    onSearchError(error) {
+      console.log(error);
       searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
     }
   });

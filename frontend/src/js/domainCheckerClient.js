@@ -49,27 +49,37 @@ class DomainCheckerClient {
       return;
     }
 
+    this.handlers.onSearchStart();
+
     try {
-      this.handlers.onSearchStart();
-      /**
-       * Send name to server, get WebSocket id for accepting free zones
-       * @type {checkDomainResponse}
-       */
-      const response = await ajax.get({
-        url: this.API_ENDPOINT + `/checkDomain/${domainName}`
-      });
+      const socketId = await this.getSocketId(domainName);
 
-      if (response.success !== 1) {
-        this.handlers.onSearchError('Server error');
-      }
-
-      if ('data' in response && 'channelId' in response.data) {
-        this.waitAnswers(response.data.channelId);
-      } else {
-        this.handlers.onSearchError('Invalid response from server');
-      }
+      this.waitAnswers(socketId);
     } catch (e) {
-      this.handlers.onSearchError('Server error');
+      this.handlers.onSearchError(e);
+    }
+  }
+
+  /**
+   * Send name to server, get WebSocket id for accepting free zones
+   * @param {string} domainName - domain name to check
+   * @returns {Promise<string>}
+   * @throws {Error} - throws if an any server error occurs or server sent invalid data
+   */
+  async getSocketId(domainName) {
+    /**
+     * @const {checkDomainResponse} - server answer
+     */
+    const response = await ajax.get({
+      url: this.API_ENDPOINT + `/checkDomain/${domainName}`
+    });
+
+    if (response.success !== 1) {
+      throw new Error('Server error');
+    }
+
+    if ('data' in response && 'channelId' in response.data) {
+      throw new Error('Invalid response from server');
     }
   }
 
