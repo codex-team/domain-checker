@@ -11,34 +11,15 @@ import ajax from '@codexteam/ajax';
  */
 
 /**
- * Event that contain information about available tlds
- * @class NewAvailableTldEvent
- * @extends CustomEvent
- */
-class NewAvailableTldEvent extends CustomEvent {
-  /**
-   * @param {string} domainName - checked domain name
-   * @param {string} tld - available tld for domain name
-   */
-  constructor(domainName, tld) {
-    super('message', {
-      detail: {
-        domainName: domainName,
-        'tld': tld
-      }
-    });
-  }
-}
-
-/**
  * DomainCheckerClient for domain-checker server
  */
-class DomainCheckerClient extends EventTarget {
+class DomainCheckerClient {
   /**
    * Setup necessary variables
    */
-  constructor() {
-    super();
+  constructor(handlers) {
+    Object.assign(this, handlers);
+
     this.API_ENDPOINT = process.env.API_ENDPOINT;
     this.WS_ENDPOINT = process.env.WS_ENDPOINT;
   }
@@ -50,7 +31,6 @@ class DomainCheckerClient extends EventTarget {
   async checkDomain(domainName) {
     // close socket connection if exist
     if (this.socket && this.socket.isOpen) {
-      this.dispatchEvent(new CustomEvent('searchAbort'));
       this.socket.terminate();
     }
 
@@ -58,12 +38,12 @@ class DomainCheckerClient extends EventTarget {
 
     // check domain name for correctness
     if (validateDomainName(domainName) !== true) {
-      this.dispatchError('Invalid domain name');
+      this.onSearchError('Invalid domain name');
       return;
     }
 
     try {
-      this.dispatchEvent(new CustomEvent('searchStart'));
+      this.onSearchStart();
       /**
        * Send name to server, get WebSocket id for accepting free zones
        * @type {checkDomainResponse}
@@ -73,16 +53,16 @@ class DomainCheckerClient extends EventTarget {
       });
 
       if (response.success !== 1) {
-        this.dispatchError('Server error');
+        this.onSearchError('Server error');
       }
 
       if ('data' in response && 'channelId' in response.data) {
         this.waitAnswers(response.data.channelId);
       } else {
-        this.dispatchError('Invalid response from server');
+        this.onSearchError('Invalid response from server');
       }
     } catch (e) {
-      this.dispatchError('Server error');
+      this.onSearchError('Server error');
     }
   }
 
@@ -100,29 +80,18 @@ class DomainCheckerClient extends EventTarget {
       onclose: (event) => {
         // if connection closed without any errors such as server interruption or loss of internet connection
         if (event.wasClean) {
-          this.dispatchEvent(new CustomEvent('searchEnd'));
+          this.onSearchEnd('searchEnd');
         } else {
-          this.dispatchError('Connection break');
+          this.onSearchError('Connection break');
         }
       },
       onmessage: (event) => {
-        this.dispatchEvent(new NewAvailableTldEvent(this.checkingDomainName, event.data));
+        this.onSearchMessage(this.checkingDomainName, event.data);
       },
       onerror: () => {
-        this.dispatchError('WebSocket error');
+        this.onSearchError('WebSocket error');
       }
     });
-  }
-
-  /**
-   * Dispatch error and break search
-   * @param {string} description - error description
-   */
-  dispatchError(description) {
-    this.dispatchEvent(new CustomEvent('searchError', {
-      detail: description
-    }));
-    this.dispatchEvent(new CustomEvent('searchAbort'));
   }
 }
 

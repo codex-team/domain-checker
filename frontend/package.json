@@ -28,7 +28,6 @@
     "dependencies": {
         "@babel/polyfill": "^7.0.0",
         "@codexteam/ajax": "^3.2.1",
-        "custom-event-polyfill": "^1.0.6",
         "dotenv-webpack": "^1.5.7",
         "normalize.css": "^8.0.1"
     },
@@ -36,6 +35,7 @@
         "> 0.5%",
         "last 2 versions",
         "Firefox ESR",
+        "ie >= 11",
         "not dead"
     ]
 }

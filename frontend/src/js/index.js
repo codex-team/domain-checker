@@ -1,6 +1,5 @@
 import '../styles/main.pcss';
 import '@babel/polyfill';
-import 'custom-event-polyfill';
 import debounce from './utils/debounce';
 import DomainCheckerClient from './domainCheckerClient';
 
@@ -37,37 +36,24 @@ import DomainCheckerClient from './domainCheckerClient';
    * Client for domain-checker API. Required for getting available zones
    * @type {DomainCheckerClient}
    */
-  const client = new DomainCheckerClient();
+  const client = new DomainCheckerClient({
+    onSearchStart() {
+      searchBoxField.classList.add(CSS.searchBoxFieldLoading);
+    },
+    onSearchMessage(domainName, tld) {
+      const child = document.createElement('div');
 
-  /**
-   * Used for handling new available TLD from client
-   * @param {NewAvailableTldEvent} event - new available TLD from client
-   */
-  const newAvailableDomainHandler = (event) => {
-    const child = document.createElement('div');
+      child.classList.add(CSS.searchBoxResultsItem);
+      child.innerHTML = `<span class="${CSS.searchBoxResultsDomainName}">${domainName}</span>.${tld}`;
 
-    child.classList.add(CSS.searchBoxResultsItem);
-    child.innerHTML = `<span class="${CSS.searchBoxResultsDomainName}">${event.detail.domainName}</span>.${event.detail.tld}`;
-
-    searchBoxResults.appendChild(child);
-  };
-
-  client.addEventListener('message', newAvailableDomainHandler);
-
-  client.addEventListener('searchStart', () => {
-    searchBoxField.classList.add(CSS.searchBoxFieldLoading);
-  });
-
-  client.addEventListener('searchEnd', () => {
-    searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
-  });
-
-  client.addEventListener('searchAbort', () => {
-    searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
-  });
-
-  client.addEventListener('searchError', () => {
-    searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
+      searchBoxResults.appendChild(child);
+    },
+    onSearchEnd() {
+      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
+    },
+    onSearchError() {
+      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
+    }
   });
 
   /**
