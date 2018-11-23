@@ -33,6 +33,11 @@ import DomainCheckerClient from './domainCheckerClient';
   const searchBoxResults = document.querySelector(`.${CSS.searchBoxResults}`);
 
   /**
+   * @type {string} contains the domain name currently being searched
+   */
+  let currentSearchingDomain = '';
+
+  /**
    * Client for domain-checker API. Required for getting available zones
    * @type {DomainCheckerClient}
    */
@@ -44,7 +49,7 @@ import DomainCheckerClient from './domainCheckerClient';
       const child = document.createElement('div');
 
       child.classList.add(CSS.searchBoxResultsItem);
-      child.innerHTML = `<span class="${CSS.searchBoxResultsDomainName}">${domainName}</span>.${tld}`;
+      child.innerHTML = `<span class="${CSS.searchBoxResultsDomainName}">${currentSearchingDomain}</span>.${tld}`;
 
       searchBoxResults.appendChild(child);
     },
@@ -62,6 +67,7 @@ import DomainCheckerClient from './domainCheckerClient';
    */
   const inputHandler = () => {
     searchBoxResults.innerHTML = '';
+    currentSearchingDomain = searchBoxInput.value;
     client.checkDomain(searchBoxInput.value);
   };
 

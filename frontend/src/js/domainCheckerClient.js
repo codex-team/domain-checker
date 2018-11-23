@@ -43,8 +43,6 @@ class DomainCheckerClient {
       this.socket.terminate();
     }
 
-    this.checkingDomainName = domainName;
-
     // check domain name for correctness
     if (validateDomainName(domainName) !== true) {
       this.handlers.onSearchError('Invalid domain name');
@@ -89,13 +87,13 @@ class DomainCheckerClient {
       onclose: (event) => {
         // if connection closed without any errors such as server interruption or loss of internet connection
         if (event.wasClean) {
-          this.handlers.onSearchEnd('searchEnd');
+          this.handlers.onSearchEnd();
         } else {
           this.handlers.onSearchError('Connection break');
         }
       },
       onmessage: (event) => {
-        this.handlers.onSearchMessage(this.checkingDomainName, event.data);
+        this.handlers.onSearchMessage(event.data);
       },
       onerror: () => {
         this.handlers.onSearchError('WebSocket error');
