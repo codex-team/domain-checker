@@ -11,11 +11,21 @@ import ajax from '@codexteam/ajax';
  */
 
 /**
+ * @typedef {object} DomainCheckerClientHandlers
+ * @description - handlers for the DomainCheckerClient events
+ * @property {function} onSearchStart - fires when new search started
+ * @property {function} onSearchMessage - fires when comes new information about available domain zone
+ * @property {function} onSearchEnd - fires when search ends successfully
+ * @property {function} onSearchError - fires when any error occurs
+ */
+
+/**
  * DomainCheckerClient for domain-checker server
  */
 class DomainCheckerClient {
   /**
-   * Setup necessary variables
+   * Setup necessary variables and handlers
+   * @param {DomainCheckerClientHandlers} handlers - handlers for the DomainCheckerClient events
    */
   constructor(handlers) {
     Object.assign(this, handlers);
