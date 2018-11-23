@@ -28,8 +28,7 @@ class DomainCheckerClient {
    * @param {DomainCheckerClientHandlers} handlers - handlers for the DomainCheckerClient events
    */
   constructor(handlers) {
-    Object.assign(this, handlers);
-
+    this.handlers = handlers;
     this.API_ENDPOINT = process.env.API_ENDPOINT;
     this.WS_ENDPOINT = process.env.WS_ENDPOINT;
   }
@@ -48,12 +47,12 @@ class DomainCheckerClient {
 
     // check domain name for correctness
     if (validateDomainName(domainName) !== true) {
-      this.onSearchError('Invalid domain name');
+      this.handlers.onSearchError('Invalid domain name');
       return;
     }
 
     try {
-      this.onSearchStart();
+      this.handlers.onSearchStart();
       /**
        * Send name to server, get WebSocket id for accepting free zones
        * @type {checkDomainResponse}
@@ -63,16 +62,16 @@ class DomainCheckerClient {
       });
 
       if (response.success !== 1) {
-        this.onSearchError('Server error');
+        this.handlers.onSearchError('Server error');
       }
 
       if ('data' in response && 'channelId' in response.data) {
         this.waitAnswers(response.data.channelId);
       } else {
-        this.onSearchError('Invalid response from server');
+        this.handlers.onSearchError('Invalid response from server');
       }
     } catch (e) {
-      this.onSearchError('Server error');
+      this.handlers.onSearchError('Server error');
     }
   }
 
@@ -90,16 +89,16 @@ class DomainCheckerClient {
       onclose: (event) => {
         // if connection closed without any errors such as server interruption or loss of internet connection
         if (event.wasClean) {
-          this.onSearchEnd('searchEnd');
+          this.handlers.onSearchEnd('searchEnd');
         } else {
-          this.onSearchError('Connection break');
+          this.handlers.onSearchError('Connection break');
         }
       },
       onmessage: (event) => {
-        this.onSearchMessage(this.checkingDomainName, event.data);
+        this.handlers.onSearchMessage(this.checkingDomainName, event.data);
       },
       onerror: () => {
-        this.onSearchError('WebSocket error');
+        this.handlers.onSearchError('WebSocket error');
       }
     });
   }
