@@ -55,8 +55,8 @@ class DomainCheckerClient {
       const socketId = await this.getSocketId(domainName);
 
       this.waitAnswers(socketId);
-    } catch (e) {
-      this.handlers.onSearchError(e);
+    } catch (error) {
+      this.handlers.onSearchError(error);
     }
   }
 
@@ -79,6 +79,8 @@ class DomainCheckerClient {
     }
 
     if ('data' in response && 'channelId' in response.data) {
+      return response.data.channelId;
+    } else {
       throw new Error('Invalid response from server');
     }
   }

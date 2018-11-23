@@ -45,7 +45,7 @@ import DomainCheckerClient from './domainCheckerClient';
     onSearchStart() {
       searchBoxField.classList.add(CSS.searchBoxFieldLoading);
     },
-    onSearchMessage(domainName, tld) {
+    onSearchMessage(tld) {
       const child = document.createElement('div');
 
       child.classList.add(CSS.searchBoxResultsItem);
@@ -64,13 +64,12 @@ import DomainCheckerClient from './domainCheckerClient';
 
   /**
    * Called when the user enters something in input field
-   * @const {function}
    */
-  const inputHandler = () => {
+  function inputHandler() {
     searchBoxResults.innerHTML = '';
     currentSearchingDomain = searchBoxInput.value;
     client.checkDomain(searchBoxInput.value);
-  };
+  }
 
   searchBoxInput.addEventListener('input', debounce(inputHandler, 200));
 })();
