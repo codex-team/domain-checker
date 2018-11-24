@@ -1,5 +1,8 @@
 .search-box {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   max-width: 500px;
   margin: auto;
   padding: 0 10px;
@@ -43,6 +46,9 @@
     padding: 12px 17px;
     border: none;
     outline: none;
+    &::-ms-clear {
+      display: none;
+    }
   }
 
   &__results {
@@ -70,6 +76,8 @@
 
 @media (--small-viewport) {
   .search-box {
+    position: static;
+    transform: none;
     margin: 30px auto;
 
     &__label, &__results {
