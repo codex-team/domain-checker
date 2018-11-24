@@ -26,7 +26,7 @@ steps:
       - export DEBUG=*,-babel
       - yarn test
     environment:
-      REDIS_URL: "redis://redis:6379"
+      REGISTRY_API_URL: "http://localhost:3000/api"
 
 services:
   - name: redis
