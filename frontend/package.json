@@ -12,6 +12,7 @@
         "eslint": "^5.7.0",
         "eslint-config-codex": "github:codex-team/eslint-config",
         "mini-css-extract-plugin": "^0.4.4",
+        "postcss-custom-media": "^7.0.7",
         "postcss-import": "^12.0.1",
         "postcss-loader": "^3.0.0",
         "postcss-nested": "^4.1.0",
@@ -27,12 +28,14 @@
     "dependencies": {
         "@babel/polyfill": "^7.0.0",
         "@codexteam/ajax": "^3.2.1",
-        "dotenv-webpack": "^1.5.7"
+        "dotenv-webpack": "^1.5.7",
+        "normalize.css": "^8.0.1"
     },
     "browserslist": [
         "> 0.5%",
         "last 2 versions",
         "Firefox ESR",
+        "ie >= 11",
         "not dead"
     ]
 }
