@@ -1,7 +1,6 @@
 import '../styles/main.pcss';
 import '@babel/polyfill';
 import debounce from './utils/debounce';
-import validateDomainName from './utils/validateDomainName';
 import DomainCheckerClient from './domainCheckerClient';
 
 (function () {
@@ -34,46 +33,43 @@ import DomainCheckerClient from './domainCheckerClient';
   const searchBoxResults = document.querySelector(`.${CSS.searchBoxResults}`);
 
   /**
+   * @type {string} contains the domain name currently being searched
+   */
+  let currentSearchingDomain = '';
+
+  /**
    * Client for domain-checker API. Required for getting available zones
    * @type {DomainCheckerClient}
    */
-  const client = new DomainCheckerClient();
-
-  /**
-   * Called when the user enters something in input field
-   * @type {function}
-   */
-  const inputHandler = () => {
-    searchBoxResults.innerHTML = '';
-    const value = searchBoxInput.value;
-
-    if (validateDomainName(value) !== true) {
-      searchBoxResults.innerHTML = '';
-      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
-      return;
-    }
-    searchBoxField.classList.add(CSS.searchBoxFieldLoading);
-
-    /**
-     * Used for handling new available TLD from client
-     * @param availableTLD - new available TLD from client
-     */
-    const newAvailableDomainHandler = (availableTLD) => {
+  const client = new DomainCheckerClient({
+    onSearchStart() {
+      searchBoxField.classList.add(CSS.searchBoxFieldLoading);
+    },
+    onSearchMessage(tld) {
       const child = document.createElement('div');
 
       child.classList.add(CSS.searchBoxResultsItem);
-      child.innerHTML = `<span class="${CSS.searchBoxResultsDomainName}">${value}</span>.${availableTLD}`;
+      child.innerHTML = `<span class="${CSS.searchBoxResultsDomainName}">${currentSearchingDomain}</span>.${tld}`;
 
       searchBoxResults.appendChild(child);
-    };
+    },
+    onSearchEnd() {
+      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
+    },
+    onSearchError(error) {
+      console.log(error);
+      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
+    }
+  });
 
-    client.checkDomain(value, newAvailableDomainHandler).then(() => {
-      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
-    }).catch((e) => {
-      searchBoxField.classList.remove(CSS.searchBoxFieldLoading);
-      console.log(e);
-    });
-  };
+  /**
+   * Called when the user enters something in input field
+   */
+  function inputHandler() {
+    searchBoxResults.innerHTML = '';
+    currentSearchingDomain = searchBoxInput.value;
+    client.checkDomain(searchBoxInput.value);
+  }
 
   searchBoxInput.addEventListener('input', debounce(inputHandler, 200));
 })();

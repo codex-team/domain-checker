@@ -83,6 +83,17 @@ class Socket {
   }
 
   /**
+   * Method emulate terminating of the WebSocket connection
+   */
+  terminate() {
+    this.ws.onclose = undefined;
+    this.ws.onmessage = undefined;
+    this.ws.onopen = undefined;
+    this.ws.onerror = undefined;
+    this.close();
+  }
+
+  /**
    * Checks whether the connection is open or not
    * @returns {boolean} - true if Socket connection is open
    */
