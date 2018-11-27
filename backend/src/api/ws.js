@@ -11,7 +11,7 @@
 const debug = require('debug')('wsHandler');
 const path = require('path');
 const env = require('dotenv').config({ path: path.resolve(__dirname, '../../.env') }).parsed;
-const registry = require('../helpers/registry');
+const worker = require('../helpers/worker');
 
 /**
  * @const {number} Channel id length. Used to check user provided channel id in route.
@@ -38,15 +38,13 @@ const wsRoute = async (ws, req) => {
 
       let status;
 
-      while ((status = await registry.popTask(env.QUEUE_RESULTS_PREFIX + id))) {
+      while ((status = await worker.popTask(env.QUEUE_RESULTS_PREFIX + id))) {
         // Workers response format: {
         //  available: true || false,
         //  tld
         // }
 
-        status = status.task;
-
-        debug(status);
+        debug(`Got result ${status}`);
 
         if (status.available) {
           ws.send(status.tld);
