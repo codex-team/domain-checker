@@ -1,13 +1,13 @@
 // const { Registry } = require('../workers/lib/registry');
 const { Worker } = require('../workers/lib/worker');
 
-let registry;
+let worker;
 
-const getRegistry = () => {
-  if (!registry) {
-    registry = new Worker('backend');
+const getWorker = () => {
+  if (!worker) {
+    worker = new Worker('backend');
   }
-  return registry;
+  return worker;
 };
 
-module.exports = getRegistry();
+module.exports = getWorker();
