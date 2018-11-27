@@ -77,7 +77,7 @@ class Worker {
       return null;
     }
 
-    return resp.data;
+    return resp.data.task;
   }
 
   /**

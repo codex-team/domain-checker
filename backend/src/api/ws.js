@@ -8,10 +8,10 @@
  *    | closes socket |
  */
 
+const debug = require('debug')('wsHandler');
 const path = require('path');
 const env = require('dotenv').config({ path: path.resolve(__dirname, '../../.env') }).parsed;
-const { QueueFactory } = require('queue');
-const brokerClient = require('../helpers/broker');
+const worker = require('../helpers/worker');
 
 /**
  * @const {number} Channel id length. Used to check user provided channel id in route.
@@ -36,19 +36,16 @@ const wsRoute = async (ws, req) => {
     if (id.length === CHANNEL_ID_LENGTH) {
       let sent = false;
 
-      const queueResponse = QueueFactory.create(env.BROKER, {
-        queueName: env.QUEUE_RESULTS_PREFIX + id,
-        timeout: env.QUEUE_TIMEOUT,
-        dbClient: brokerClient
-      });
-
       let status;
 
-      while ((status = await queueResponse.pop())) {
+      while ((status = await worker.popTask(env.QUEUE_RESULTS_PREFIX + id))) {
         // Workers response format: {
         //  available: true || false,
         //  tld
         // }
+
+        debug(`Got result ${status}`);
+
         if (status.available) {
           ws.send(status.tld);
           sent = true;

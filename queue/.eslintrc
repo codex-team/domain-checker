@@ -1,6 +1,0 @@
-{
-    "extends": "codex",
-    "env": {
-        "jest": true
-    }
-}

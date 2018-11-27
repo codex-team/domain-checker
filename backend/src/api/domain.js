@@ -1,13 +1,13 @@
 /**
  * Main route which puts user domain lookup requests to task queue
  *
- *  Client             Express                                         Queue
- *    |  -> domain        | Checks domain, generates task id             |
- *    |       id <-       | and puts task to queue            -> task    |
+ *  Client             Express                                                 Registry
+ *    |  -> domain        | Checks domain, generates task id                     |
+ *    |       id <-       | and pushes task to registry via worker    -> task    |
  */
 
 const uuid = require('uuid/v4');
-const registry = require('../helpers/registry');
+const worker = require('../helpers/worker');
 
 // Generates random id for user request and pushes tasks to zoneCheck worker
 const domainRoute = async (req, res) => {
@@ -17,7 +17,7 @@ const domainRoute = async (req, res) => {
     // Generate unique id for request
     const answersSocketId = uuid();
 
-    registry.pushTask('zoneCheck', {
+    worker.pushTask('zoneCheck', {
       domain,
       id: answersSocketId
     });
