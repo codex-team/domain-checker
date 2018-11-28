@@ -1,5 +1,7 @@
 const path = require('path');
-const env = require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') }).parsed;
+
+require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
+
 const { Worker } = require('../lib/worker');
 const { checkDomain } = require('./checkDomain');
 
@@ -27,7 +29,7 @@ class WhoisWorker extends Worker {
     try {
       const available = await checkDomain(task.domain, task.tld);
 
-      await this.registry.pushTask('responder', {
+      await this.pushTask('responder', {
         id: task.id,
         tld: task.tld,
         available
