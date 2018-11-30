@@ -70,7 +70,7 @@ const checkDomain = async (name, tld) => {
     } catch (e) {
       if (e.code === 'ETIMEDOUT') {
         throw Error('Whois timed out');
-      } else if (e.status === 1) {
+      } else if (e.stdout) {
         // Strange bug in whois for .com domains: it returns 1 code instead of 0, so node throws an exception
         return checkAvailability(e.stdout.toString());
       } else {
