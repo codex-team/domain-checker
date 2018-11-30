@@ -51,7 +51,6 @@ class Worker {
       } catch (e) {
         console.error(`Worker ${this.name} error`);
         console.error(e);
-        process.exit(1);
       }
     }
   }
