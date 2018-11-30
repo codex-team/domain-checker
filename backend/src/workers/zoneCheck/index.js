@@ -1,5 +1,7 @@
 const path = require('path');
-const env = require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') }).parsed;
+
+require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
+
 const fs = require('fs');
 const { Worker } = require('../lib/worker');
 

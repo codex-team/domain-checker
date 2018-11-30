@@ -51,7 +51,7 @@ class Worker {
       } catch (e) {
         console.error(`Worker ${this.name} error`);
         console.error(e);
-        throw new WorkerError(e);
+        process.exit(1);
       }
     }
   }
@@ -67,10 +67,10 @@ class Worker {
     try {
       resp = await axios.get(this.popTaskUrl + workerName, { responseType: 'json' });
     } catch (e) {
-      throw new WorkerError(e);
+      resp = e.response;
     }
 
-    if (resp.status == 505) {
+    if (resp.status >= 500) {
       throw new WorkerError('Registry API error');
     }
     if (resp.status == 202) {
