@@ -25,11 +25,19 @@ class DnsWorker extends Worker {
     try {
       const available = await checkDomain(task.domain, task.tld);
 
-      await this.pushTask('responder', {
-        id: task.id,
-        tld: task.tld,
-        available
-      });
+      if (available) {
+        await this.pushTask('responder', {
+          id: task.id,
+          tld: task.tld,
+          available
+        });
+      } else {
+        await this.pushTask('whois', {
+          domain: task.domain,
+          tld: task.tld,
+          id: task.id
+        });
+      }
     } catch (e) {
       console.error(e);
     }
