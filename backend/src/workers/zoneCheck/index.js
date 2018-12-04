@@ -37,7 +37,7 @@ class ZoneCheckWorker extends Worker {
     try {
       await Promise.all(
         tlds.map(async tld => {
-          this.pushTask('whois', {
+          this.pushTask('dns', {
             domain: task.domain,
             tld: tld,
             id: task.id
