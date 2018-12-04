@@ -1,4 +1,8 @@
-const {Worker} = require('../lib/worker');
+const path = require('path');
+
+require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
+
+const { Worker } = require('../lib/worker');
 const { checkDomain } = require('./checkDomain');
 
 /**
