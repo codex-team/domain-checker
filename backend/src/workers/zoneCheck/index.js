@@ -25,7 +25,7 @@ class ZoneCheckWorker extends Worker {
    * Creates an instance of ZoneCheckerWorker.
    */
   constructor() {
-    super('tt');
+    super('zoneCheck');
   }
 
   /**
