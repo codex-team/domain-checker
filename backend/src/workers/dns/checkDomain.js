@@ -75,7 +75,7 @@ const checkDomain = async (name, tld) => {
     };
 
     /**
-     * @const {{SUCCESS: number}} DNS response status codes
+     * DNS response status codes
      * See https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6
      */
     const DNS_RCODES = {
