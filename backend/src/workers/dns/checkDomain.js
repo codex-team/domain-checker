@@ -2,6 +2,13 @@ const { WorkerError } = require('../lib/worker');
 const axios = require('axios');
 
 /**
+ * @typedef {object} DoHResponse (DNS over HTTPS)
+ * @description - Format of server answer
+ * @property {object} data - data from server
+ * @property {number} data.Status - Status of the DNS query
+ */
+
+/**
  * Returns DNS status for searching domain
  * @param {string} name Base domain name w/o TLD.
  * @param {string} tld TLD.
