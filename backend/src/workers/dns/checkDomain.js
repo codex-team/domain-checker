@@ -76,12 +76,24 @@ const checkDomain = async (name, tld) => {
 
     /**
      * @const {{SUCCESS: number}} DNS response status codes
+     * See https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6
      */
-    const DNS_RESPONSE_STATUS = { SUCCESS: 0 };
+    const DNS_RCODES = {
+      NO_ERROR: 0, // No Error
+      FORM_ERR: 1, // Format Error
+      SERV_FAIL: 2, // Server Failure
+      NXDOMAIN: 3, // Non-Existent Domain
+      NOT_IMP: 4, // Not Implemented
+      REFUSED: 5, // Query Refused
+      YXDOMAIN: 6, // Name Exists when it should not
+      YXRRSET: 7, // RR Set Exists when it should not
+      NXRRSET: 8, // RR Set that should exist does not
+      NOT_AUTH: 9 // Server Not Authoritative for zone
+    };
 
     let dnsStatus = await getDNSStatus(name, tld, DNS_RECORD_TYPES.A);
 
-    if (dnsStatus === DNS_RESPONSE_STATUS.SUCCESS) {
+    if (dnsStatus === DNS_RCODES.NO_ERROR) {
       return false;
     }
 
