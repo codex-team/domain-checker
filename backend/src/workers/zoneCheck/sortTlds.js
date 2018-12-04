@@ -17,4 +17,4 @@ tlds = tlds.filter(tld => tld.indexOf('.') === -1);
 tlds.sort();
 tlds.sort((a, b) => a.length - b.length);
 
-fs.writeFile(file, JSON.stringify(tlds), () => console.log('Done writing'));
+fs.writeFile(file, JSON.stringify(tlds, null, 2), () => console.log('Done writing'));
