@@ -3,6 +3,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 
 const fs = require('fs');
+const pMap = require('p-map');
 const { Worker } = require('../lib/worker');
 
 /**
@@ -24,7 +25,7 @@ class ZoneCheckWorker extends Worker {
    * Creates an instance of ZoneCheckerWorker.
    */
   constructor() {
-    super('zoneCheck');
+    super('tt');
   }
 
   /**
@@ -35,14 +36,16 @@ class ZoneCheckWorker extends Worker {
    */
   async handle(task) {
     try {
-      await Promise.all(
-        tlds.map(async tld => {
+      await pMap(
+        tlds,
+        async tld => {
           this.pushTask('whois', {
             domain: task.domain,
             tld: tld,
             id: task.id
           });
-        })
+        },
+        { concurrency: +process.env.ZONECHECK_CONCURRENT_MAX }
       );
     } catch (e) {
       console.error(e);
