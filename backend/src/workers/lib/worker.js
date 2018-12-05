@@ -96,11 +96,14 @@ class Worker {
     try {
       resp = await axios.put(this.pushTaskUrl + workerName, payload);
     } catch (e) {
-      throw new WorkerError(e);
+      if (!e.response) {
+        throw new WorkerError('Undefined error on push');
+      }
+      resp = e.response;
     }
 
-    if (resp.status === 500) {
-      throw new WorkerError("Can't push task to registry");
+    if (resp.status >= 500) {
+      throw new WorkerError('Registry API error');
     }
   }
 }
