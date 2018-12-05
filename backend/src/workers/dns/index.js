@@ -64,7 +64,6 @@ class DnsWorker extends Worker {
    * @param {Array<string>} task.tlds Tlds array
    */
   async handle(task) {
-    console.log(task);
     for (let tld of task.tlds) {
       this.dnsQueue.add(async () => {
         await this.query(task.domain, tld, task.id);
