@@ -99,7 +99,7 @@ const checkDomain = async (name, tld) => {
 
     // If domain doesn't have A record, maybe it has AAAA (available only by ipv6)
     dnsStatus = await getDNSStatus(name, tld, DNS_RECORD_TYPES.AAAA);
-    return !(dnsStatus === 0);
+    return !(dnsStatus === DNS_RCODES.NO_ERROR);
   } catch (e) {
     console.error('Error in DoH request');
     throw e;
