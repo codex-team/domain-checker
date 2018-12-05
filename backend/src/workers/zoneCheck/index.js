@@ -36,7 +36,9 @@ class ZoneCheckWorker extends Worker {
    * @param {string} task.domain Domain name
    */
   async handle(task) {
-    for (let i = 0; i < tlds.length; i = i + +process.env.ZONECHECK_PUSH_TLDS_SIZE) {
+    const { length: tldsLen } = tlds;
+
+    for (let i = 0; i < tldsLen; i = i + +process.env.ZONECHECK_PUSH_TLDS_SIZE) {
       this.pushTask('dns', {
         domain: task.domain,
         tlds: tlds.slice(i, i + +process.env.ZONECHECK_PUSH_TLDS_SIZE),

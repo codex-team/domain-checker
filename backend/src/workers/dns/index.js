@@ -25,6 +25,38 @@ class DnsWorker extends Worker {
   }
 
   /**
+   * Query DNS servers for domain. If no A and AAAA record is present pushes task to whois worker.
+   * @param {string} domain Base domain name w/o TLD.
+   * @param {string} tld TLD.
+   * @param {string} id Task id.
+   * @memberof DnsWorker
+   */
+  async query(domain, tld, id) {
+    try {
+      const available = await checkDomain(domain, tld);
+
+      console.log(`Resolved ${domain}.${tld}`);
+
+      // If DNS query is empty, push to whois worker
+      if (available) {
+        await this.pushTask('whois', {
+          domain,
+          tld,
+          id
+        });
+      } else {
+        await this.pushTask('responder', {
+          id,
+          tld,
+          available
+        });
+      }
+    } catch (e) {
+      throw new WorkerError(e);
+    }
+  }
+
+  /**
    * Process tasks
    * @param {Object} task Worker task
    * @param {string} task.id Task id
@@ -35,28 +67,7 @@ class DnsWorker extends Worker {
     console.log(task);
     for (let tld of task.tlds) {
       this.dnsQueue.add(async () => {
-        try {
-          const available = await checkDomain(task.domain, tld);
-
-          console.log(`Resolved ${task.domain}.${tld}`);
-
-          // If DNS query is empty, push to whois worker
-          if (available) {
-            await this.pushTask('whois', {
-              domain: task.domain,
-              tld,
-              id: task.id
-            });
-          } else {
-            await this.pushTask('responder', {
-              id: task.id,
-              tld,
-              available
-            });
-          }
-        } catch (e) {
-          throw new WorkerError(e);
-        }
+        await this.query(task.domain, tld, task.id);
       });
     }
   }

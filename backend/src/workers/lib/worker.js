@@ -43,7 +43,8 @@ class Worker {
    */
   async start() {
     /**
-     * Async sleep function
+     * Async sleep function.
+     * Used to sleep when there are more pending tasks than set maximum, so that queue could free.
      * @param {number} ms Sleep time in ms
      */
     const sleep = ms => {
