@@ -36,7 +36,7 @@ class ZoneCheckWorker extends Worker {
    * @param {string} task.domain Domain name
    */
   async handle(task) {
-    const { length: tldsLen } = tlds;
+    const tldsLen = tlds.length;
 
     for (let i = 0; i < tldsLen; i = i + +process.env.ZONECHECK_PUSH_TLDS_SIZE) {
       this.pushTask('dns', {
