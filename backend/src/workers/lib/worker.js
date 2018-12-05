@@ -1,4 +1,5 @@
 const axios = require('axios');
+const PQueue = require('p-queue');
 
 /**
  * Worker error.
@@ -14,6 +15,7 @@ class WorkerError extends Error {}
  * @property {string} registryUrl Registry API url, taken from env.REGISTRY_API_URL. E.g. http://registry.com/api
  * @property {string} popTaskUrl URL of Registry API's popTask method
  * @property {string} pushTask URL of Registry API's pushTask method
+ * @property {PQueue} promiseQueue Concurrency limiting promise queue for task handling
  */
 class Worker {
   /**
@@ -26,6 +28,8 @@ class Worker {
     this.registryApiUrl = process.env.REGISTRY_API_URL;
     this.popTaskUrl = this.registryApiUrl + '/popTask/';
     this.pushTaskUrl = this.registryApiUrl + '/pushTask/';
+
+    this.promiseQueue = new PQueue({ concurrency: +process.env.TASKS_CONCURRENT_MAX });
   }
 
   /**
@@ -47,7 +51,9 @@ class Worker {
           continue;
         }
 
-        await this.handle(task);
+        this.promiseQueue.add(() => {
+          this.handle(task);
+        });
       } catch (e) {
         console.error(`Worker ${this.name} error`);
         console.error(e);

@@ -39,7 +39,7 @@ class ZoneCheckWorker extends Worker {
       await pMap(
         tlds,
         async tld => {
-          this.pushTask('whois', {
+          this.pushTask('dns', {
             domain: task.domain,
             tld: tld,
             id: task.id
