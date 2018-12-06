@@ -3,7 +3,9 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 
 const fs = require('fs');
-const { Worker } = require('../lib/worker');
+const {
+  Worker, WorkerError
+} = require('../lib/worker');
 
 /**
  * @const {string} Path to file where tlds are stored
@@ -34,18 +36,16 @@ class ZoneCheckWorker extends Worker {
    * @param {string} task.domain Domain name
    */
   async handle(task) {
-    try {
-      await Promise.all(
-        tlds.map(async tld => {
-          this.pushTask('dns', {
-            domain: task.domain,
-            tld: tld,
-            id: task.id
-          });
-        })
-      );
-    } catch (e) {
-      console.error(e);
+    const tldsLen = tlds.length;
+
+    for (let i = 0; i < tldsLen; i = i + +process.env.ZONECHECK_PUSH_TLDS_SIZE) {
+      this.pushTask('dns', {
+        domain: task.domain,
+        tlds: tlds.slice(i, i + +process.env.ZONECHECK_PUSH_TLDS_SIZE),
+        id: task.id
+      }).catch(err => {
+        throw new WorkerError(err);
+      });
     }
   }
 }

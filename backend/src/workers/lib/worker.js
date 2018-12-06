@@ -42,18 +42,35 @@ class Worker {
    * Start tasks processing
    */
   async start() {
+    /**
+     * Async sleep function.
+     * Used to sleep when there are more pending tasks than set maximum, so that queue could free.
+     * @param {number} ms Sleep time in ms
+     */
+    const sleep = ms => {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    };
+
     console.log(`Worker ${this.name} started`);
+
     while (true) {
       try {
+        if (this.promiseQueue.pending >= +process.env.TASKS_CONCURRENT_MAX) {
+          console.log("Too many pending tasks, don't taking more");
+          await sleep(+process.env.WORKERS_SLEEP_TIME);
+          continue;
+        }
+
         const task = await this.popTask(this.name);
 
         if (!task) {
           continue;
         }
 
-        this.promiseQueue.add(() => {
+        this.promiseQueue.add(async () => {
           this.handle(task);
         });
+        console.log(`New task, pending ${this.promiseQueue.pending}`);
       } catch (e) {
         console.error(`Worker ${this.name} error`);
         console.error(e);
@@ -96,11 +113,14 @@ class Worker {
     try {
       resp = await axios.put(this.pushTaskUrl + workerName, payload);
     } catch (e) {
-      throw new WorkerError(e);
+      if (!e.response) {
+        throw new WorkerError('Undefined error on push');
+      }
+      resp = e.response;
     }
 
-    if (resp.status === 500) {
-      throw new WorkerError("Can't push task to registry");
+    if (resp.status >= 500) {
+      throw new WorkerError('Registry API error');
     }
   }
 }
