@@ -71,5 +71,11 @@ import DomainCheckerClient from './domainCheckerClient';
     client.checkDomain(searchBoxInput.value);
   }
 
-  searchBoxInput.addEventListener('input', debounce(inputHandler, 200));
+  /**
+   *
+   * @const {number} Timeout for sending request to the server
+   */
+  const debounceTimeout = +process.env.DEBOUNCE_TIMEOUT;
+
+  searchBoxInput.addEventListener('input', debounce(inputHandler, debounceTimeout));
 })();
